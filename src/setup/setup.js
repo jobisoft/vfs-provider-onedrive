@@ -139,8 +139,11 @@ signInBtn.addEventListener('click', async () => {
     if (e.name !== 'AbortError') {
       setStatus(e.message || String(e), 'error');
     }
-    signInBtn.disabled = false;
   } finally {
+    // Always re-enable so the user can retry with a different Microsoft
+    // account after a failed sign-in, a silently-failing drive load, or
+    // even after a successful sign-in if they picked the wrong account.
+    signInBtn.disabled = false;
     signInAbort = null;
   }
 });

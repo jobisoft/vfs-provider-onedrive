@@ -264,7 +264,6 @@ signInBtn.addEventListener('click', async () => {
     );
     if (existing) {
       setStatus(i18n('optionsErrorAccountExists'), 'error');
-      signInBtn.disabled = false;
       return;
     }
 
@@ -280,8 +279,10 @@ signInBtn.addEventListener('click', async () => {
     if (e.name !== 'AbortError') {
       setStatus(e.message || String(e), 'error');
     }
-    signInBtn.disabled = false;
   } finally {
+    // Always re-enable so the user can retry with a different Microsoft
+    // account after any failure (sign-in error, dup-account rejection, etc.).
+    signInBtn.disabled = false;
     signInAbort = null;
   }
 });
