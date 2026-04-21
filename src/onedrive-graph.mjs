@@ -155,12 +155,28 @@ const MAX_RETRY_AFTER_SEC = 60;
 export async function graphFetch(method, url, opts) {
   const { accountId, getToken, headers = {}, body, signal, raw = false } = opts;
 
+  const resp = await _authedFetchWithRetry(
+    (tok) => _doFetch(method, url, tok, headers, body, signal),
+    accountId, getToken, signal
+  );
+
+  if (raw || resp.ok) return resp;
+  await _throwGraphError(resp);
+}
+
+/**
+ * Shared auth/retry wrapper used by both `graphFetch` and `graphBatch`.
+ * Handles initial token fetch, one forced-refresh retry on 401, and
+ * Retry-After-aware retries on 429. The caller supplies a function that
+ * performs the actual HTTP call given a bearer token.
+ */
+async function _authedFetchWithRetry(doFetchWithToken, accountId, getToken, signal) {
   let token = await getToken(accountId, signal);
-  let resp  = await _doFetch(method, url, token, headers, body, signal);
+  let resp  = await doFetchWithToken(token);
 
   if (resp.status === 401) {
     token = await getToken(accountId, signal, /* force */ true);
-    resp  = await _doFetch(method, url, token, headers, body, signal);
+    resp  = await doFetchWithToken(token);
     if (resp.status === 401) {
       throw Object.assign(new Error(browser.i18n.getMessage('errorAuth')), { code: 'E:AUTH' });
     }
@@ -170,12 +186,11 @@ export async function graphFetch(method, url, opts) {
   while (resp.status === 429 && attempts < MAX_429_RETRIES) {
     const ra = Math.min(MAX_RETRY_AFTER_SEC, parseInt(resp.headers.get('Retry-After') ?? '1', 10) || 1);
     await sleepAbortable(ra * 1000, signal);
-    resp = await _doFetch(method, url, token, headers, body, signal);
+    resp = await doFetchWithToken(token);
     attempts++;
   }
 
-  if (raw || resp.ok) return resp;
-  await _throwGraphError(resp);
+  return resp;
 }
 
 async function _doFetch(method, url, token, headers, body, signal) {
@@ -185,6 +200,69 @@ async function _doFetch(method, url, token, headers, body, signal) {
     body,
     signal,
   });
+}
+
+// ── Batch ───────────────────────────────────────────────────────────────────
+
+const BATCH_URL     = `${GRAPH_BASE}/$batch`;
+export const BATCH_MAX_REQUESTS = 20;
+
+/**
+ * POSTs a batch of up to `BATCH_MAX_REQUESTS` sub-requests to Graph's $batch
+ * endpoint and returns per-request results.
+ *
+ * Each `subrequests[i]` must be `{ id, method, url, headers?, body? }` where
+ * `url` is relative to `/v1.0` (Graph $batch syntax). `body`, if given, is
+ * passed through verbatim to the Graph service (typically a plain object).
+ *
+ * Returns an array aligned by `id`: `[{ id, ok, status, headers, body }]`.
+ * Auth and retry handling (401 → refresh, 429 → Retry-After) are applied to
+ * the **outer** batch call. Per-sub-request failures are surfaced in the
+ * returned array, not thrown — callers decide how to react.
+ *
+ * Note: Graph also reports Retry-After on individual sub-responses. This
+ * helper does not transparently retry those; let callers pick a strategy
+ * if they need per-sub-request retries.
+ */
+export async function graphBatch(subrequests, opts) {
+  const { accountId, getToken, signal } = opts;
+  if (!Array.isArray(subrequests) || subrequests.length === 0) return [];
+  if (subrequests.length > BATCH_MAX_REQUESTS) {
+    throw Object.assign(
+      new Error(`graphBatch: too many sub-requests (${subrequests.length} > ${BATCH_MAX_REQUESTS})`),
+      { code: 'E:PROVIDER' }
+    );
+  }
+
+  const envelope = JSON.stringify({ requests: subrequests });
+
+  const resp = await _authedFetchWithRetry(
+    (tok) => fetch(BATCH_URL, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${tok}`,
+        'Content-Type': 'application/json',
+      },
+      body: envelope,
+      signal,
+    }),
+    accountId, getToken, signal
+  );
+
+  if (!resp.ok) {
+    await _throwGraphError(resp);
+  }
+
+  const payload = await resp.json();
+  const responses = Array.isArray(payload?.responses) ? payload.responses : [];
+
+  return responses.map(r => ({
+    id:      r.id,
+    ok:      r.status >= 200 && r.status < 300,
+    status:  r.status,
+    headers: r.headers ?? {},
+    body:    r.body,
+  }));
 }
 
 /**
@@ -201,60 +279,69 @@ export function sleepAbortable(ms, signal) {
 }
 
 async function _throwGraphError(resp) {
-  let bodyText = '';
-  let graphCode = null;
-  try {
-    bodyText = await resp.text();
-    const parsed = JSON.parse(bodyText);
-    graphCode = parsed?.error?.code ?? null;
-  } catch { /* non-JSON body is fine */ }
-
   const status = resp.status;
+  const bodyText = await resp.text().catch(() => '');
+
+  // Parse Graph's error envelope — `{ error: { code, message, innerError: { code } } }` — once up front
+  // so `err.message` surfaces as a clean human-readable string and `err.graphCode`
+  // carries the machine-readable lookup key.
+  let graphCode = null;
+  let innerCode = null;
+  let graphMessage = null;
+  try {
+    const parsed = JSON.parse(bodyText);
+    graphCode    = parsed?.error?.code                 ?? null;
+    innerCode    = parsed?.error?.innerError?.code     ?? null;
+    graphMessage = parsed?.error?.message              ?? null;
+  } catch { /* non-JSON body is fine — we fall back to a generic message below */ }
+
+  // Message shown to UI: prefer Graph's human message, fall back to HTTP status.
+  const message = graphMessage || `HTTP ${status}`;
+
+  const mk = (code, details) => {
+    const e = new Error(message);
+    e.code = code;
+    if (details) e.details = details;
+    e.graphCode = graphCode;
+    e.innerCode = innerCode;
+    e.status = status;
+    return e;
+  };
 
   if (status === 403) {
-    throw Object.assign(new Error(bodyText || browser.i18n.getMessage('errorAuth')), { code: 'E:AUTH' });
+    throw mk('E:AUTH');
   }
   if (status === 409 || status === 412 || graphCode === 'nameAlreadyExists') {
-    throw Object.assign(new Error(browser.i18n.getMessage('errorFileExists')), { code: 'E:EXIST' });
+    const e = mk('E:EXIST');
+    e.message = browser.i18n.getMessage('errorFileExists');
+    throw e;
   }
   if (status === 423) {
-    throw Object.assign(new Error(bodyText || `HTTP ${status}`), {
-      code: 'E:PROVIDER',
-      details: {
-        id:          'locked',
-        title:       browser.i18n.getMessage('errorLockedTitle'),
-        description: browser.i18n.getMessage('errorLockedDescription'),
-      },
+    throw mk('E:PROVIDER', {
+      id:          'locked',
+      title:       browser.i18n.getMessage('errorLockedTitle'),
+      description: browser.i18n.getMessage('errorLockedDescription'),
     });
   }
   if (status === 429) {
-    throw Object.assign(new Error(bodyText || `HTTP ${status}`), {
-      code: 'E:PROVIDER',
-      details: {
-        id:          'rate-limited',
-        title:       browser.i18n.getMessage('errorRateLimitedTitle'),
-        description: browser.i18n.getMessage('errorRateLimitedDescription'),
-      },
+    throw mk('E:PROVIDER', {
+      id:          'rate-limited',
+      title:       browser.i18n.getMessage('errorRateLimitedTitle'),
+      description: browser.i18n.getMessage('errorRateLimitedDescription'),
     });
   }
   if (status === 507 || graphCode === 'quotaLimitReached') {
-    throw Object.assign(new Error(bodyText || `HTTP ${status}`), {
-      code: 'E:PROVIDER',
-      details: {
-        id:          'quota-exceeded',
-        title:       browser.i18n.getMessage('errorQuotaExceededTitle'),
-        description: browser.i18n.getMessage('errorQuotaExceededDescription'),
-      },
+    throw mk('E:PROVIDER', {
+      id:          'quota-exceeded',
+      title:       browser.i18n.getMessage('errorQuotaExceededTitle'),
+      description: browser.i18n.getMessage('errorQuotaExceededDescription'),
     });
   }
 
-  throw Object.assign(new Error(bodyText || `HTTP ${status}`), {
-    code: 'E:PROVIDER',
-    details: {
-      id:          `http-${status}`,
-      title:       browser.i18n.getMessage('errorHttpTitle', [String(status)]),
-      description: browser.i18n.getMessage('errorHttpDescription', [String(status)]),
-    },
+  throw mk('E:PROVIDER', {
+    id:          `http-${status}`,
+    title:       browser.i18n.getMessage('errorHttpTitle', [String(status)]),
+    description: browser.i18n.getMessage('errorHttpDescription', [String(status)]),
   });
 }
 
