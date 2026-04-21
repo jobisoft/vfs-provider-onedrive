@@ -20,7 +20,8 @@ import {
 } from './onedrive-storage.mjs';
 import {
   GRAPH_BASE, driveRootBase, pathToGraphUrl, parentOf, basenameOf,
-  mapGraphItem, graphFetch, graphJSON, sleepAbortable,
+  mapGraphItem, graphFetch, graphJSON, graphBatch, BATCH_MAX_REQUESTS,
+  sleepAbortable,
 } from './onedrive-graph.mjs';
 import { refreshAccessToken, resolveClientId } from './onedrive-auth.mjs';
 import { pollDelta, primeDelta } from './onedrive-delta.mjs';
@@ -31,6 +32,12 @@ const SIMPLE_UPLOAD_MAX  = 4 * 1024 * 1024;    // 4 MiB
 const UPLOAD_CHUNK_SIZE  = 5 * 1024 * 1024;    // multiple of 327_680 per Graph
 const COPY_POLL_INTERVAL = 1000;               // ms between copy-monitor polls
 
+function _chunks(arr, size) {
+  const out = [];
+  for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
+  return out;
+}
+
 // ────────────────────────────────────────────────────────────────────────────
 
 class OneDriveProvider extends VfsProviderImplementation {
@@ -38,6 +45,8 @@ class OneDriveProvider extends VfsProviderImplementation {
   #aborts = new Map();
   /** accountId → Promise<string> (in-flight refresh) */
   #refreshing = new Map();
+  /** driveId → rootItemId — avoids repeat GETs to /drives/{d}/root for root-parent ops */
+  #rootIds = new Map();
 
   constructor() {
     super({
@@ -431,24 +440,110 @@ class OneDriveProvider extends VfsProviderImplementation {
       const dirs  = entries.filter(e => e.kind === 'directory').sort((a, b) => a.path.localeCompare(b.path));
       const files = entries.filter(e => e.kind === 'file');
       const completed = [];
+      const totalItems = dirs.length + files.length;
+
+      // Parent-id cache reused across the whole merge so the same parent
+      // path isn't resolved N times when many files share a parent.
+      const parentIdCache = new Map();
+      const getParentId = async (destP) => {
+        const parent = parentOf(destP);
+        if (parentIdCache.has(parent)) return parentIdCache.get(parent);
+        const id = await this.#resolveParentId(conn, destP, signal);
+        parentIdCache.set(parent, id);
+        return id;
+      };
 
       try {
+        // ── Mkdir phase ─────────────────────────────────────────────
+        // Serial: usually few dirs, ordering matters (parent-before-child),
+        // and the #createFolder path already handles the merge-case cleanly.
         for (const d of dirs) {
           if (signal.aborted) { this.#emitPartial(conn, completed); return; }
           const dest = dstNorm + d.path.slice(srcNorm.length);
           await this.#createFolder(conn, dest, /* mergeIfExists */ true, signal);
           completed.push({ kind: 'directory', action: 'created', target: { path: dest } });
+          this.reportProgress(requestId, Math.floor((completed.length / totalItems) * 100));
         }
-        for (const f of files) {
+
+        // ── File phase (batched) ────────────────────────────────────
+        for (const chunk of _chunks(files, BATCH_MAX_REQUESTS)) {
           if (signal.aborted) { this.#emitPartial(conn, completed); return; }
-          const dest = dstNorm + f.path.slice(srcNorm.length);
-          if (op === 'copy') {
-            await this.#copyFileSingle(conn, f.path, dest, signal, requestId);
-            completed.push({ kind: 'file', action: 'copied', source: { path: f.path }, target: { path: dest } });
-          } else {
-            await this.#moveFileSingle(conn, f.path, dest, signal);
-            completed.push({ kind: 'file', action: 'moved', source: { path: f.path }, target: { path: dest } });
+
+          // Per-file prep in parallel: parent-id + existing-target lookup.
+          // Each file still issues up to 2 Graph calls, but within a chunk
+          // they run concurrently, so end-to-end we wait on one round-trip,
+          // not N.
+          const plan = await Promise.all(chunk.map(async (f) => {
+            if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
+            const destP   = dstNorm + f.path.slice(srcNorm.length);
+            const parentId = await getParentId(destP);
+            const existingId = await this.#resolveItemId(conn, destP, signal).catch(() => null);
+            return { src: f, destP, parentId, existingId };
+          }));
+
+          // Batch-delete pre-existing targets (merge semantics = overwrite
+          // per file). Graph's /copy on personal OneDrive silently
+          // ignores conflictBehavior, so we have to pre-clear.
+          const conflicts = plan.filter(p => p.existingId);
+          if (conflicts.length > 0) {
+            const delReqs = conflicts.map((p, i) => ({
+              id:     `d${i}`,
+              method: 'DELETE',
+              url:    `/drives/${encodeURIComponent(conn.driveId)}/items/${encodeURIComponent(p.existingId)}`,
+            }));
+            // Best-effort — 404s (item already gone) are fine; we only care
+            // that the slot is empty for the follow-up copy/move.
+            await graphBatch(delReqs, this.#batchOpts(conn.accountId, signal));
           }
+
+          if (op === 'copy') {
+            const copyReqs = plan.map((p, i) => ({
+              id:     `c${i}`,
+              method: 'POST',
+              url:    `/drives/${encodeURIComponent(conn.driveId)}/items/${encodeURIComponent(p.src.id)}/copy`,
+              headers: { 'Content-Type': 'application/json' },
+              body: {
+                parentReference: { driveId: conn.driveId, id: p.parentId },
+                name: basenameOf(p.destP),
+              },
+            }));
+            const results = await graphBatch(copyReqs, this.#batchOpts(conn.accountId, signal));
+
+            // Parallel monitor polling. Each /copy returns 202 + a monitor
+            // URL; we poll them all concurrently instead of one-at-a-time.
+            await Promise.all(results.map(async (r, i) => {
+              if (r.status === 202) {
+                const loc = r.headers?.Location ?? r.headers?.location;
+                if (loc) await this.#awaitCopy(loc, requestId, signal);
+              } else if (!r.ok) {
+                throw this.#batchResponseToError(r);
+              }
+            }));
+
+            for (const p of plan) {
+              completed.push({ kind: 'file', action: 'copied', source: { path: p.src.path }, target: { path: p.destP } });
+            }
+          } else {
+            const moveReqs = plan.map((p, i) => ({
+              id:     `m${i}`,
+              method: 'PATCH',
+              url:    `/drives/${encodeURIComponent(conn.driveId)}/items/${encodeURIComponent(p.src.id)}`,
+              headers: { 'Content-Type': 'application/json' },
+              body: {
+                parentReference: { id: p.parentId },
+                name: basenameOf(p.destP),
+              },
+            }));
+            const results = await graphBatch(moveReqs, this.#batchOpts(conn.accountId, signal));
+            for (const r of results) {
+              if (!r.ok) throw this.#batchResponseToError(r);
+            }
+            for (const p of plan) {
+              completed.push({ kind: 'file', action: 'moved', source: { path: p.src.path }, target: { path: p.destP } });
+            }
+          }
+
+          this.reportProgress(requestId, Math.floor((completed.length / totalItems) * 100));
         }
       } catch (e) {
         this.#emitPartial(conn, completed);
@@ -457,9 +552,8 @@ class OneDriveProvider extends VfsProviderImplementation {
       }
 
       if (op === 'move') {
-        // Remove the now-empty source tree. Best-effort: Graph may have a
-        // handful of empty dirs to delete. A single DELETE on the root path
-        // handles the entire subtree.
+        // Remove the now-empty source tree. A single DELETE on the root
+        // path handles the entire subtree server-side.
         const delResp = await graphFetch('DELETE', pathToGraphUrl(conn, srcPath, ':'),
           this.#callOpts(conn.accountId, signal, { raw: true }));
         if (delResp.status !== 204 && delResp.status !== 404 && !delResp.ok) {
@@ -477,61 +571,30 @@ class OneDriveProvider extends VfsProviderImplementation {
     this.#broadcastChanges(conn, completed).catch(() => { });
   }
 
-  async #copyFileSingle(conn, oldPath, newPath, signal, requestId) {
-    const srcId = await this.#resolveItemId(conn, oldPath, signal);
-    const destParentId = await this.#resolveParentId(conn, newPath, signal);
-
-    // Delete pre-existing target (merge semantics = overwrite per file).
-    const existingId = await this.#resolveItemId(conn, newPath, signal).catch(() => null);
-    if (existingId) {
-      await graphFetch('DELETE',
-        `${GRAPH_BASE}/drives/${encodeURIComponent(conn.driveId)}/items/${encodeURIComponent(existingId)}`,
-        this.#callOpts(conn.accountId, signal));
-    }
-
-    const body = {
-      parentReference: { driveId: conn.driveId, id: destParentId },
-      name: basenameOf(newPath),
+  #batchOpts(accountId, signal) {
+    return {
+      accountId,
+      getToken: (id, sig, force) => this.#getAccessToken(id, sig, force),
+      signal,
     };
-    const resp = await graphFetch('POST',
-      `${GRAPH_BASE}/drives/${encodeURIComponent(conn.driveId)}/items/${encodeURIComponent(srcId)}/copy`,
-      this.#callOpts(conn.accountId, signal, {
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(body),
-        raw:     true,
-      }));
-    if (resp.status === 202) {
-      const monitorUrl = resp.headers.get('Location');
-      if (monitorUrl) await this.#awaitCopy(monitorUrl, requestId, signal);
-    } else if (!resp.ok) {
-      await graphFetch('POST',
-        `${GRAPH_BASE}/drives/${encodeURIComponent(conn.driveId)}/items/${encodeURIComponent(srcId)}/copy`,
-        this.#callOpts(conn.accountId, signal, {
-          headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify(body),
-        }));
-    }
   }
 
-  async #moveFileSingle(conn, oldPath, newPath, signal) {
-    const srcItem = await this.#resolveItemMeta(conn, oldPath, signal);
-    const destParentId = await this.#resolveParentId(conn, newPath, signal);
-
-    // Ensure target slot is free — delete existing if any.
-    const existingId = await this.#resolveItemId(conn, newPath, signal).catch(() => null);
-    if (existingId && existingId !== srcItem.id) {
-      await graphFetch('DELETE',
-        `${GRAPH_BASE}/drives/${encodeURIComponent(conn.driveId)}/items/${encodeURIComponent(existingId)}`,
-        this.#callOpts(conn.accountId, signal));
+  #batchResponseToError(r) {
+    const errBody   = r.body?.error ?? {};
+    const graphCode = errBody.code;
+    if (graphCode === 'nameAlreadyExists' || r.status === 409) {
+      return Object.assign(new Error(browser.i18n.getMessage('errorFileExists')), { code: 'E:EXIST' });
     }
-
-    const body = { parentReference: { id: destParentId }, name: basenameOf(newPath) };
-    await graphJSON('PATCH',
-      `${GRAPH_BASE}/drives/${encodeURIComponent(conn.driveId)}/items/${encodeURIComponent(srcItem.id)}`,
-      this.#callOpts(conn.accountId, signal, {
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(body),
-      }));
+    if (r.status === 403) {
+      return Object.assign(new Error(errBody.message || 'Forbidden'), { code: 'E:AUTH' });
+    }
+    const msg = errBody.message || `HTTP ${r.status}`;
+    const e = new Error(msg);
+    e.code      = 'E:PROVIDER';
+    e.details   = { id: `batch-${r.status}` };
+    e.graphCode = graphCode;
+    e.status    = r.status;
+    return e;
   }
 
   // ── Upload helpers ────────────────────────────────────────────────────────
@@ -669,9 +732,12 @@ class OneDriveProvider extends VfsProviderImplementation {
     const parent = parentOf(childPath);
     if (parent === '/') {
       if (conn.rootItemId) return conn.rootItemId;
+      const cached = this.#rootIds.get(conn.driveId);
+      if (cached) return cached;
       const rootMeta = await graphJSON('GET',
         `${GRAPH_BASE}/drives/${encodeURIComponent(conn.driveId)}/root?$select=id`,
         this.#callOpts(conn.accountId, signal));
+      if (rootMeta?.id) this.#rootIds.set(conn.driveId, rootMeta.id);
       return rootMeta.id;
     }
     return this.#resolveItemId(conn, parent, signal);
@@ -685,10 +751,17 @@ class OneDriveProvider extends VfsProviderImplementation {
       : ':/children';
     const url = pathToGraphUrl(conn, parent, parentSuffix);
 
+    // Always `fail` on conflict. For merge-mode we interpret the resulting
+    // E:EXIST as "folder is already there — that's fine" in the catch. This
+    // deliberately avoids Graph's `replace` conflict-behaviour on folders,
+    // which can delete existing folder contents and appears to trigger
+    // Microsoft's `itemDisabledDueToUserContentMigration` state when fired
+    // repeatedly against the same folder (e.g. via `#mkdirpParent` on every
+    // write).
     const body = {
       name,
       folder: {},
-      '@microsoft.graph.conflictBehavior': mergeIfExists ? 'replace' : 'fail',
+      '@microsoft.graph.conflictBehavior': 'fail',
     };
 
     try {
@@ -697,10 +770,7 @@ class OneDriveProvider extends VfsProviderImplementation {
         body:    JSON.stringify(body),
       }));
     } catch (e) {
-      if (!mergeIfExists && e.code === 'E:EXIST') throw e;
-      // For merge mode, Graph's `replace` conflict behaviour returns 200 on
-      // existing folders; a thrown E:EXIST here would mean something else.
-      if (mergeIfExists && e.code === 'E:EXIST') return;
+      if (e.code === 'E:EXIST' && mergeIfExists) return;
       throw e;
     }
   }
