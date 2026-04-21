@@ -1,0 +1,41 @@
+<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3b82f6"/>
+      <stop offset="1" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="cloudBack" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#dbeafe"/>
+      <stop offset="1" stop-color="#93c5fd"/>
+    </linearGradient>
+    <linearGradient id="cloudFront" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#e0f2fe"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded background tile -->
+  <rect width="128" height="128" rx="24" fill="url(#bg)"/>
+
+  <!-- Back cloud: smaller, offset up-right, lighter -->
+  <path fill="url(#cloudBack)" opacity="0.9"
+        d="M 96 36
+           C 88 36 82 42 81 50
+           C 75 50 70 55 70 61
+           C 70 68 75 72 82 72
+           L 112 72
+           C 118 72 122 68 122 62
+           C 122 56 118 52 112 52
+           C 112 44 105 36 96 36 Z"/>
+
+  <!-- Front cloud: larger, centered, white -->
+  <path fill="url(#cloudFront)"
+        d="M 50 52
+           C 61 52 71 59 74 69
+           C 85 69 94 76 94 87
+           C 94 97 85 102 75 102
+           L 28 102
+           C 17 102 8 94 8 83
+           C 8 72 17 64 28 64
+           C 30 57 40 52 50 52 Z"/>
+</svg>

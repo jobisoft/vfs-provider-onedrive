@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <script src="setup.js" type="module"></script>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      padding: 20px;
+      font-size: 13px;
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h2 {
+      margin: 0 0 4px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .subtitle {
+      color: #64748b;
+      margin: 0 0 18px;
+      font-size: 12px;
+    }
+
+    label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 4px;
+      color: #334155;
+    }
+
+    input[type="text"], select {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      font-size: 13px;
+      margin-bottom: 12px;
+      outline: none;
+      background: white;
+    }
+
+    input:focus, select:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px #bfdbfe;
+    }
+
+    #account-section { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; }
+
+    #signin-btn {
+      width: 100%;
+      padding: 10px;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    #signin-btn:hover:not(:disabled) { background: #1d4ed8; }
+    #signin-btn:disabled { opacity: 0.6; cursor: default; }
+
+    .hint {
+      color: #64748b;
+      font-size: 11px;
+      margin: 0 0 12px;
+    }
+
+    #profile {
+      padding: 8px 10px;
+      background: #f1f5f9;
+      border-radius: 4px;
+      margin-bottom: 12px;
+    }
+    #profile .mono { font-family: ui-monospace, monospace; color: #64748b; font-size: 11px; }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      margin-top: auto;
+      padding-top: 16px;
+      justify-content: flex-end;
+    }
+
+    button {
+      padding: 6px 16px;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    button:hover:not(:disabled) { background: #1d4ed8; }
+    button:disabled { opacity: 0.5; cursor: default; }
+    button.cancel { background: #dc2626; }
+    button.cancel:hover:not(:disabled) { background: #b91c1c; }
+
+    #status {
+      margin-top: 10px;
+      font-size: 12px;
+      min-height: 16px;
+      overflow-wrap: break-word;
+    }
+    #status.ok    { color: #16a34a; }
+    #status.error { color: #dc2626; }
+    #status.info  { color: #2563eb; }
+
+    details.advanced-options {
+      margin-bottom: 12px;
+      font-size: 12px;
+    }
+    details.advanced-options summary {
+      cursor: pointer;
+      color: #64748b;
+      padding: 4px 0;
+      user-select: none;
+    }
+    details.advanced-options summary:hover { color: #334155; }
+    details.advanced-options[open] summary { margin-bottom: 8px; }
+  </style>
+</head>
+
+<body>
+  <h2 data-i18n-content="setupTitle"></h2>
+  <p class="subtitle"><strong id="addon-name"></strong><span data-i18n-content="setupSubtitleSuffix"></span></p>
+
+  <div id="account-section" hidden>
+    <label for="account-select" data-i18n-content="setupReuseLabel"></label>
+    <select id="account-select">
+      <option value="" data-i18n-content="setupReuseNew"></option>
+    </select>
+  </div>
+
+  <div id="new-account-form">
+    <details class="advanced-options">
+      <summary data-i18n-content="setupAdvancedSummary"></summary>
+      <label for="client-id" data-i18n-content="setupLabelClientId"></label>
+      <input id="client-id" type="text" data-i18n-placeholder="setupPlaceholderClientId" autocomplete="off" spellcheck="false" />
+      <p class="hint" data-i18n-content="setupHintClientIdAdvanced"></p>
+    </details>
+
+    <button id="signin-btn" data-i18n-content="setupBtnSignIn"></button>
+
+    <div id="profile" hidden>
+      <div><strong id="profile-display-name"></strong></div>
+      <div class="mono" id="profile-upn"></div>
+    </div>
+  </div>
+
+  <div id="drive-section" hidden>
+    <label for="drive-select" data-i18n-content="setupLabelDrive"></label>
+    <select id="drive-select"></select>
+  </div>
+
+  <label for="conn-name" data-i18n-content="setupLabelConnName"></label>
+  <input id="conn-name" type="text" />
+
+  <div id="status"></div>
+
+  <div class="row">
+    <button id="connect-btn" disabled data-i18n-content="setupBtnConnect"></button>
+    <button class="cancel" id="cancel-btn" data-i18n-content="setupBtnCancel"></button>
+  </div>
+</body>
+
+</html>

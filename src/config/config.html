@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <script src="config.js" type="module"></script>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      padding: 20px;
+      font-size: 13px;
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h2 {
+      margin: 0 0 18px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .panel {
+      padding: 14px 16px 16px;
+      margin-bottom: 16px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: white;
+    }
+
+    .panel h3 {
+      margin: 0 0 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #0f172a;
+    }
+
+    label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 4px;
+      color: #334155;
+    }
+
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      font-size: 13px;
+      margin-bottom: 4px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px #bfdbfe;
+    }
+
+    .hint {
+      font-size: 11px;
+      color: #94a3b8;
+      margin: 0 0 4px;
+    }
+
+    .account-field { margin-bottom: 10px; }
+    .account-field:last-of-type { margin-bottom: 14px; }
+
+    .account-field-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: #64748b;
+      margin-bottom: 2px;
+    }
+
+    .account-field-value {
+      color: #0f172a;
+      font-size: 13px;
+      word-break: break-all;
+    }
+
+    .account-field-value.mono {
+      font-family: monospace;
+      font-size: 12px;
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      margin-top: auto;
+      padding-top: 16px;
+      justify-content: flex-end;
+    }
+
+    button {
+      padding: 6px 16px;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    button:hover:not(:disabled) { background: #1d4ed8; }
+    button:disabled { opacity: 0.5; cursor: default; }
+
+    button.secondary {
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+    }
+    button.secondary:hover:not(:disabled) { background: #e2e8f0; }
+
+    button.cancel { background: #dc2626; color: #fff; border: none; }
+    button.cancel:hover:not(:disabled) { background: #b91c1c; }
+
+    #status {
+      margin-top: 10px;
+      font-size: 12px;
+      min-height: 16px;
+      overflow-wrap: break-word;
+    }
+    #status.ok    { color: #16a34a; }
+    #status.error { color: #dc2626; }
+    #status.info  { color: #2563eb; }
+  </style>
+</head>
+
+<body>
+  <h2 data-i18n-content="configTitle"></h2>
+
+  <section class="panel">
+    <h3 data-i18n-content="configSectionConnection"></h3>
+    <label for="conn-name" data-i18n-content="configLabelConnName"></label>
+    <input id="conn-name" type="text" />
+    <p class="hint" data-i18n-content="configHintConnName"></p>
+
+    <label for="poll-interval" data-i18n-content="configLabelPollInterval"></label>
+    <input id="poll-interval" type="number" min="0" max="3600" step="10" />
+    <p class="hint" data-i18n-content="configHintPollInterval"></p>
+  </section>
+
+  <section class="panel">
+    <h3 data-i18n-content="configSectionAccount"></h3>
+    <div class="account-field">
+      <div class="account-field-label" data-i18n-content="optionsLabelAccountName"></div>
+      <div class="account-field-value" id="acc-name"></div>
+    </div>
+    <div class="account-field">
+      <div class="account-field-label" data-i18n-content="configLabelUpn"></div>
+      <div class="account-field-value mono" id="acc-upn"></div>
+    </div>
+    <div class="account-field">
+      <div class="account-field-label" data-i18n-content="configLabelDrive"></div>
+      <div class="account-field-value" id="acc-drive"></div>
+    </div>
+    <button class="secondary" id="manage-accounts-btn" data-i18n-content="configBtnManageAccounts"></button>
+  </section>
+
+  <div id="status"></div>
+
+  <div class="row">
+    <button id="save-btn" data-i18n-content="configBtnSave"></button>
+    <button class="cancel" id="cancel-btn" data-i18n-content="setupBtnCancel"></button>
+  </div>
+</body>
+
+</html>

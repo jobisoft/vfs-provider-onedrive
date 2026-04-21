@@ -1,0 +1,250 @@
+{
+  "extensionName": {
+    "message": "VFS-Provider: OneDrive"
+  },
+  "extensionDescription": {
+    "message": "Microsoft OneDrive storage provider for the VFS Toolkit."
+  },
+
+  "setupTitle": {
+    "message": "Connect to OneDrive"
+  },
+  "setupSubtitleDefaultAddon": {
+    "message": "An add-on"
+  },
+  "setupSubtitleSuffix": {
+    "message": " wants to connect to a OneDrive account."
+  },
+  "setupLabelConnName": {
+    "message": "Connection name"
+  },
+  "setupLabelClientId": {
+    "message": "Azure application (client) ID"
+  },
+  "setupPlaceholderClientId": {
+    "message": "00000000-0000-0000-0000-000000000000"
+  },
+  "setupAdvancedSummary": {
+    "message": "Use a custom Azure app (advanced)"
+  },
+  "setupHintClientId": {
+    "message": "Leave empty to use the bundled default Azure app. Provide your own only if you've registered a separate app."
+  },
+  "setupHintClientIdAdvanced": {
+    "message": "Required Azure app settings: Mobile and desktop applications platform with the https://login.microsoftonline.com/common/oauth2/nativeclient redirect URI, Allow public client flows = Yes, and delegated Microsoft Graph permissions Files.ReadWrite.All + User.Read + offline_access."
+  },
+  "setupStatusSigningIn": {
+    "message": "Signing in via popup window…"
+  },
+  "setupErrorPopupClosed": {
+    "message": "The sign-in window was closed before authentication completed."
+  },
+  "setupErrorStateMismatch": {
+    "message": "OAuth state mismatch — aborted for safety."
+  },
+  "setupErrorOauthNoCode": {
+    "message": "Authorization was not granted."
+  },
+  "setupLabelDrive": {
+    "message": "Drive"
+  },
+  "setupBtnSignIn": {
+    "message": "Sign in with Microsoft"
+  },
+  "setupBtnConnect": {
+    "message": "Connect"
+  },
+  "setupBtnCancel": {
+    "message": "Cancel"
+  },
+  "setupStatusAuthenticating": {
+    "message": "Signing in to Microsoft…"
+  },
+  "setupStatusLoadingDrives": {
+    "message": "Loading drives…"
+  },
+  "setupStatusSaving": {
+    "message": "Saving connection…"
+  },
+  "setupErrorNoDrives": {
+    "message": "No drives available for this account."
+  },
+  "setupErrorNotReady": {
+    "message": "Please complete sign-in and pick a drive first."
+  },
+  "setupReuseLabel": {
+    "message": "Use an existing account"
+  },
+  "setupReuseNew": {
+    "message": "- Create new account -"
+  },
+
+  "driveKindOwn": {
+    "message": "Own"
+  },
+  "driveKindShared": {
+    "message": "Shared with me"
+  },
+  "driveOwnLabel": {
+    "message": "My OneDrive"
+  },
+  "driveSharedFallback": {
+    "message": "Shared item"
+  },
+
+  "configTitle": {
+    "message": "OneDrive Settings"
+  },
+  "configSectionConnection": {
+    "message": "Connection"
+  },
+  "configSectionAccount": {
+    "message": "Account"
+  },
+  "configBtnManageAccounts": {
+    "message": "Manage accounts"
+  },
+  "configLabelConnName": {
+    "message": "Connection name"
+  },
+  "configHintConnName": {
+    "message": "Label shown in the storage picker."
+  },
+  "configLabelPollInterval": {
+    "message": "Change-detection interval (seconds, minimum 60)"
+  },
+  "configHintPollInterval": {
+    "message": "How often to check OneDrive for external changes. Set to 0 to disable. Minimum is 60 seconds (the browser's alarm floor)."
+  },
+  "configLabelUpn": {
+    "message": "User principal name"
+  },
+  "configLabelDrive": {
+    "message": "Drive"
+  },
+  "configBtnSave": {
+    "message": "Save"
+  },
+  "configStatusSaveFailed": {
+    "message": "Failed to save settings."
+  },
+  "configStatusSaved": {
+    "message": "Settings saved."
+  },
+
+  "errorUnknownConnection": {
+    "message": "Unknown or unauthorized connection."
+  },
+  "errorAuth": {
+    "message": "Sign-in failed or expired. Please reconnect in the provider Options page."
+  },
+  "errorFileExists": {
+    "message": "A file or folder with that name already exists."
+  },
+  "errorFolderExists": {
+    "message": "A folder with that name already exists."
+  },
+  "errorHttp": {
+    "message": "OneDrive HTTP $STATUS$",
+    "placeholders": { "status": { "content": "$1" } }
+  },
+  "errorHttpTitle": {
+    "message": "OneDrive error ($STATUS$)",
+    "placeholders": { "status": { "content": "$1" } }
+  },
+  "errorHttpDescription": {
+    "message": "Microsoft Graph returned an unexpected HTTP $STATUS$ response.",
+    "placeholders": { "status": { "content": "$1" } }
+  },
+  "errorLockedTitle": {
+    "message": "Item is locked"
+  },
+  "errorLockedDescription": {
+    "message": "OneDrive reports the item is currently locked by another user or process."
+  },
+  "errorRateLimitedTitle": {
+    "message": "Rate limited"
+  },
+  "errorRateLimitedDescription": {
+    "message": "OneDrive is throttling requests. Try again in a few moments."
+  },
+  "errorQuotaExceededTitle": {
+    "message": "Quota exceeded"
+  },
+  "errorQuotaExceededDescription": {
+    "message": "The OneDrive account has no storage space left."
+  },
+
+  "optionsPageTitle": {
+    "message": "OneDrive Accounts & Connections"
+  },
+  "optionsPageSubtitle": {
+    "message": "Manage Microsoft accounts and the add-on connections that use them."
+  },
+  "optionsAccountsHeading": {
+    "message": "Accounts"
+  },
+  "optionsThAccount": {
+    "message": "Account"
+  },
+  "optionsAccountsEmpty": {
+    "message": "No accounts."
+  },
+  "optionsBtnAddAccount": {
+    "message": "Add Account"
+  },
+  "optionsAddAccountTitle": {
+    "message": "Add OneDrive Account"
+  },
+  "optionsBtnSignInAndAdd": {
+    "message": "Sign in and add"
+  },
+  "optionsBtnSaveAccount": {
+    "message": "Save"
+  },
+  "optionsBtnEdit": {
+    "message": "Edit"
+  },
+  "optionsEditAccountTitle": {
+    "message": "Edit OneDrive Account"
+  },
+  "optionsLabelAccountName": {
+    "message": "Account name"
+  },
+  "optionsPlaceholderAccountName": {
+    "message": "My OneDrive"
+  },
+  "optionsAccountNotice": {
+    "message": "Each account requires an Azure AD app registration (Mobile & desktop applications, public-client enabled) with the redirect URI shown in the Add dialog. One account can back multiple connections across add-ons."
+  },
+  "optionsGrantedHeading": {
+    "message": "Active Connections"
+  },
+  "optionsThConnection": {
+    "message": "Connection"
+  },
+  "optionsEmptyState": {
+    "message": "No active connections."
+  },
+  "optionsNotice": {
+    "message": "Revoking a connection removes the add-on's access to the associated drive. The underlying account remains signed in."
+  },
+  "optionsErrorAccountExists": {
+    "message": "An account for this Microsoft user already exists."
+  },
+  "optionsConnAccount": {
+    "message": "Account:"
+  },
+  "optionsConnDrive": {
+    "message": "Drive:"
+  },
+  "optionsConnExtension": {
+    "message": "Add-on:"
+  },
+  "btnDelete": {
+    "message": "Delete"
+  },
+  "btnRevoke": {
+    "message": "Revoke"
+  }
+}
