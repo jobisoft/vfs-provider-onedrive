@@ -1,41 +1,60 @@
 <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#3b82f6"/>
-      <stop offset="1" stop-color="#1d4ed8"/>
+      <stop offset="0" stop-color="#0d9488"/>
+      <stop offset="1" stop-color="#134e4a"/>
     </linearGradient>
-    <linearGradient id="cloudBack" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#dbeafe"/>
-      <stop offset="1" stop-color="#93c5fd"/>
+    <linearGradient id="folderTab" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ccfbf1"/>
+      <stop offset="1" stop-color="#99f6e4"/>
     </linearGradient>
-    <linearGradient id="cloudFront" x1="0" y1="0" x2="0" y2="1">
+    <linearGradient id="folderFront" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#ffffff"/>
-      <stop offset="1" stop-color="#e0f2fe"/>
+      <stop offset="1" stop-color="#ecfeff"/>
     </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.2"/>
+    </filter>
   </defs>
 
-  <!-- Rounded background tile -->
+  <!-- Rounded background (non-Microsoft teal gradient) -->
   <rect width="128" height="128" rx="24" fill="url(#bg)"/>
 
-  <!-- Back cloud: smaller, offset up-right, lighter -->
-  <path fill="url(#cloudBack)" opacity="0.9"
-        d="M 96 36
-           C 88 36 82 42 81 50
-           C 75 50 70 55 70 61
-           C 70 68 75 72 82 72
-           L 112 72
-           C 118 72 122 68 122 62
-           C 122 56 118 52 112 52
-           C 112 44 105 36 96 36 Z"/>
+  <g filter="url(#shadow)">
+    <!-- Folder tab/back -->
+    <path fill="url(#folderTab)"
+          d="M 22 34
+             L 52 34
+             L 60 44
+             L 102 44
+             a 6 6 0 0 1 6 6
+             L 108 96
+             a 6 6 0 0 1 -6 6
+             L 22 102
+             a 6 6 0 0 1 -6 -6
+             L 16 40
+             a 6 6 0 0 1 6 -6
+             Z"/>
 
-  <!-- Front cloud: larger, centered, white -->
-  <path fill="url(#cloudFront)"
-        d="M 50 52
-           C 61 52 71 59 74 69
-           C 85 69 94 76 94 87
-           C 94 97 85 102 75 102
-           L 28 102
-           C 17 102 8 94 8 83
-           C 8 72 17 64 28 64
-           C 30 57 40 52 50 52 Z"/>
+    <!-- Folder front -->
+    <path fill="url(#folderFront)"
+          d="M 16 54
+             L 108 54
+             L 108 96
+             a 6 6 0 0 1 -6 6
+             L 22 102
+             a 6 6 0 0 1 -6 -6
+             Z"/>
+  </g>
+
+  <!-- Cloud inside the folder (teal, echoes background) -->
+  <path fill="#0d9488"
+        d="M 44 76
+           C 48 72 54 70 58 72
+           C 62 66 72 66 76 72
+           C 82 70 88 76 86 82
+           C 90 84 90 90 86 92
+           L 42 92
+           C 36 92 36 82 42 82
+           Z"/>
 </svg>
