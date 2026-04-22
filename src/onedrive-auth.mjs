@@ -30,8 +30,13 @@ export const REDIRECT_URI = 'https://login.microsoftonline.com/common/oauth2/nat
  * Bundled default — the add-on's own Azure app registration. Users who don't
  * supply a custom clientId authenticate through this app. Keep in sync with
  * the app registration under the maintainer's Azure tenant.
+ *
+ * Deliberately NOT exported — the UI must never see this value. Accounts
+ * that use the default are stored without any `clientId` field, so if this
+ * constant is ever rotated, every default-using account automatically picks
+ * up the new value via `resolveClientId`.
  */
-export const DEFAULT_CLIENT_ID = 'c6b54396-5255-4c78-86d6-a478451f0b13';
+const DEFAULT_CLIENT_ID = 'c6b54396-5255-4c78-86d6-a478451f0b13';
 
 // Files.ReadWrite.All lets us traverse shared-with-me drives.
 // offline_access tells Azure AD to issue a refresh_token.
@@ -70,16 +75,24 @@ async function _codeChallenge(verifier) {
  * Runs the full popup-based auth-code + PKCE flow and returns a full account
  * payload ready to be persisted. Throws `E:AUTH` on failure / cancel.
  *
- * @param {string} clientId
+ * @param {string} customClientId  Possibly-empty user override. When empty,
+ *                                 the bundled default is used for the OAuth
+ *                                 request but not stored on the returned
+ *                                 payload — so `resolveClientId` can later
+ *                                 resolve absent `clientId` to whatever the
+ *                                 current default is.
  * @param {AbortSignal} [signal]
  */
-export async function runInteractiveFlow(clientId, signal) {
+export async function runInteractiveFlow(customClientId, signal) {
+  const trimmedCustom = customClientId?.trim?.() ?? '';
+  const effectiveClientId = trimmedCustom || DEFAULT_CLIENT_ID;
+
   const verifier  = _randomVerifier();
   const challenge = await _codeChallenge(verifier);
   const state     = crypto.randomUUID();
 
   const authUrl = new URL(AUTH_URL);
-  authUrl.searchParams.set('client_id',             clientId);
+  authUrl.searchParams.set('client_id',             effectiveClientId);
   authUrl.searchParams.set('response_type',         'code');
   authUrl.searchParams.set('redirect_uri',          REDIRECT_URI);
   authUrl.searchParams.set('response_mode',         'query');
@@ -98,9 +111,9 @@ export async function runInteractiveFlow(clientId, signal) {
 
   try {
     const code    = await _waitForRedirect(win.id, state, signal);
-    const tokens  = await _exchangeCodeForToken(clientId, code, verifier);
+    const tokens  = await _exchangeCodeForToken(effectiveClientId, code, verifier);
     const profile = await _fetchProfile(tokens.accessToken, signal);
-    return _buildAccountPayload(clientId, tokens, profile);
+    return _buildAccountPayload(trimmedCustom, tokens, profile);
   } finally {
     browser.windows.remove(win.id).catch(() => { /* already gone */ });
   }
@@ -274,9 +287,8 @@ async function _fetchProfile(accessToken, signal) {
   return resp.json();
 }
 
-function _buildAccountPayload(clientId, tokenResp, profile) {
-  return {
-    clientId,
+function _buildAccountPayload(customClientId, tokenResp, profile) {
+  const payload = {
     displayName:       profile.displayName       ?? profile.userPrincipalName ?? '',
     userPrincipalName: profile.userPrincipalName ?? profile.mail              ?? '',
     tenant:            'common',
@@ -286,4 +298,7 @@ function _buildAccountPayload(clientId, tokenResp, profile) {
     scope:             tokenResp.scope,
     tokenType:         tokenResp.tokenType,
   };
+  const trimmed = customClientId?.trim?.() ?? '';
+  if (trimmed) payload.clientId = trimmed;
+  return payload;
 }

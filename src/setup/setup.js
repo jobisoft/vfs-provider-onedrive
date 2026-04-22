@@ -1,6 +1,6 @@
 import * as vfs from '../vendor/vfs-provider.mjs';
 import { localizeDocument } from '../vendor/i18n.mjs';
-import { runInteractiveFlow, DEFAULT_CLIENT_ID } from '../onedrive-auth.mjs';
+import { runInteractiveFlow } from '../onedrive-auth.mjs';
 import { listAvailableDrives } from '../onedrive-drives.mjs';
 import { accountKey, connectionKey, loadAccounts } from '../onedrive-storage.mjs';
 
@@ -119,14 +119,14 @@ async function onAccountSelectChange() {
 // ── Sign-in (new account) ─────────────────────────────────────────────────────
 
 signInBtn.addEventListener('click', async () => {
-  const clientId = clientIdInput.value.trim() || DEFAULT_CLIENT_ID;
+  const customClientId = clientIdInput.value.trim();
 
   signInBtn.disabled = true;
   setStatus(i18n('setupStatusSigningIn'), 'info');
   signInAbort = new AbortController();
 
   try {
-    const payload = await runInteractiveFlow(clientId, signInAbort.signal);
+    const payload = await runInteractiveFlow(customClientId, signInAbort.signal);
 
     context = { ...payload, accountId: null };
     profileDisplay.textContent = payload.displayName ?? '';
@@ -208,20 +208,21 @@ connectBtn.addEventListener('click', async () => {
     let accountId = context.accountId;
     if (!accountId) {
       accountId = crypto.randomUUID();
-      await browser.storage.local.set({
-        [accountKey(accountId)]: {
-          name:              context.name ?? context.displayName ?? context.userPrincipalName,
-          displayName:       context.displayName,
-          userPrincipalName: context.userPrincipalName,
-          tenant:            context.tenant,
-          clientId:          context.clientId,
-          accessToken:       context.accessToken,
-          refreshToken:      context.refreshToken,
-          expiresAt:         context.expiresAt,
-          scope:             context.scope,
-          tokenType:         context.tokenType,
-        },
-      });
+      const record = {
+        name:              context.name ?? context.displayName ?? context.userPrincipalName,
+        displayName:       context.displayName,
+        userPrincipalName: context.userPrincipalName,
+        tenant:            context.tenant,
+        accessToken:       context.accessToken,
+        refreshToken:      context.refreshToken,
+        expiresAt:         context.expiresAt,
+        scope:             context.scope,
+        tokenType:         context.tokenType,
+      };
+      // Only persist a custom `clientId`. Default-using accounts have no
+      // `clientId` field — `resolveClientId` handles that at runtime.
+      if (context.clientId) record.clientId = context.clientId;
+      await browser.storage.local.set({ [accountKey(accountId)]: record });
     }
 
     await browser.storage.local.set({

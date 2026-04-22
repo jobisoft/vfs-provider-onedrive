@@ -1,5 +1,5 @@
 import { localizeDocument } from '../vendor/i18n.mjs';
-import { runInteractiveFlow, DEFAULT_CLIENT_ID } from '../onedrive-auth.mjs';
+import { runInteractiveFlow } from '../onedrive-auth.mjs';
 import {
   ACCOUNT_PREFIX, CONNECTION_PREFIX,
   accountKey, connectionKey, loadAccounts, loadConnections,
@@ -195,10 +195,12 @@ function openEditPopover(account) {
   resetPopover();
   editingAccountId = account.accountId;
   nameInput.value = account.name ?? account.displayName ?? '';
-  clientIdInput.value = account.clientId ?? '';
-  // Auto-expand advanced section if the account uses a non-default client ID,
-  // so the user can see and edit the override.
-  advancedDetails.open = !!(account.clientId && account.clientId !== DEFAULT_CLIENT_ID);
+  const storedCustom = account.clientId ?? '';
+  clientIdInput.value = storedCustom;
+  // Expand advanced section only when this account uses a custom client ID.
+  // Accounts on the bundled default have no `clientId` field (or an empty
+  // string) and should show the advanced section collapsed.
+  advancedDetails.open = storedCustom.length > 0;
   popoverTitle.textContent = i18n('optionsEditAccountTitle');
   signInBtn.textContent = i18n('optionsBtnSaveAccount');
   popover.showPopover();
@@ -223,7 +225,7 @@ popover.addEventListener('toggle', e => {
 function onEsc(e) { if (e.key === 'Escape') hidePopover(); }
 
 signInBtn.addEventListener('click', async () => {
-  const clientId = clientIdInput.value.trim() || DEFAULT_CLIENT_ID;
+  const customClientId = clientIdInput.value.trim();  // '' = use bundled default
 
   signInBtn.disabled = true;
 
@@ -233,15 +235,14 @@ signInBtn.addEventListener('click', async () => {
   if (editingAccountId) {
     const storage = await browser.storage.local.get(accountKey(editingAccountId));
     const current = storage[accountKey(editingAccountId)] ?? {};
-    const currentClientId = current.clientId ?? DEFAULT_CLIENT_ID;
-    const clientIdChanged = currentClientId !== clientId;
+    const currentCustom = current.clientId ?? '';
+    const clientIdChanged = currentCustom !== customClientId;
 
     if (!clientIdChanged) {
       await browser.storage.local.set({
         [accountKey(editingAccountId)]: {
           ...current,
-          name:     nameInput.value.trim() || current.name,
-          clientId,
+          name: nameInput.value.trim() || current.name,
         },
       });
       hidePopover();
@@ -254,7 +255,7 @@ signInBtn.addEventListener('click', async () => {
   signInAbort = new AbortController();
 
   try {
-    const payload = await runInteractiveFlow(clientId, signInAbort.signal);
+    const payload = await runInteractiveFlow(customClientId, signInAbort.signal);
 
     // Dedup by userPrincipalName unless editing.
     const storage = await browser.storage.local.get(null);
