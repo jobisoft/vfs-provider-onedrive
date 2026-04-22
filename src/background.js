@@ -200,27 +200,26 @@ class OneDriveProvider extends VfsProviderImplementation {
   async onList(requestId, storageId, path) {
     const conn = await this.#connection(storageId);
     return this.#withRequest(requestId, async (signal) => {
-      const results = [];
-      let url = pathToGraphUrl(conn, path,
-        path === '/' ? '/children' : ':/children'
-      ) + '?$select=id,name,size,folder,file,lastModifiedDateTime,parentReference,eTag&$top=200';
-
-      while (url) {
-        const page = await graphJSON('GET', url, this.#callOpts(conn.accountId, signal));
-        for (const item of page.value ?? []) {
-          const entry = mapGraphItem(conn, item);
-          results.push(entry);
-        }
-        url = page['@odata.nextLink'] ?? null;
-      }
-
+      const results = await this.#listChildren(conn, path, signal);
       results.sort((a, b) => {
         if (a.kind !== b.kind) return a.kind === 'directory' ? -1 : 1;
         return a.name.localeCompare(b.name);
       });
-
       return results.map(({ path, name, kind, size, lastModified }) => ({ path, name, kind, size, lastModified }));
     });
+  }
+
+  async #listChildren(conn, path, signal) {
+    const out = [];
+    let url = pathToGraphUrl(conn, path,
+      path === '/' ? '/children' : ':/children'
+    ) + '?$select=id,name,size,folder,file,lastModifiedDateTime,parentReference,eTag&$top=200';
+    while (url) {
+      const page = await graphJSON('GET', url, this.#callOpts(conn.accountId, signal));
+      for (const item of page.value ?? []) out.push(mapGraphItem(conn, item));
+      url = page['@odata.nextLink'] ?? null;
+    }
+    return out;
   }
 
   async onReadFile(requestId, storageId, path) {
@@ -781,18 +780,10 @@ class OneDriveProvider extends VfsProviderImplementation {
     const out = [];
     const stack = [root];
     while (stack.length) {
-      const cur = stack.pop();
-      let url = pathToGraphUrl(conn, cur,
-        cur === '/' ? '/children' : ':/children'
-      ) + '?$select=id,name,size,folder,file,lastModifiedDateTime,parentReference,eTag&$top=200';
-      while (url) {
-        const page = await graphJSON('GET', url, this.#callOpts(conn.accountId, signal));
-        for (const item of page.value ?? []) {
-          const entry = mapGraphItem(conn, item);
-          out.push(entry);
-          if (entry.kind === 'directory') stack.push(entry.path);
-        }
-        url = page['@odata.nextLink'] ?? null;
+      const entries = await this.#listChildren(conn, stack.pop(), signal);
+      for (const entry of entries) {
+        out.push(entry);
+        if (entry.kind === 'directory') stack.push(entry.path);
       }
     }
     return out;
