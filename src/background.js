@@ -21,7 +21,7 @@ import {
 import {
   GRAPH_BASE, pathToGraphUrl, parentOf, basenameOf,
   mapGraphItem, graphFetch, graphJSON, graphBatch, BATCH_MAX_REQUESTS,
-  sleepAbortable,
+  sleepAbortable, throwGraphError,
 } from './onedrive-graph.mjs';
 import { refreshAccessToken, resolveClientId } from './onedrive-auth.mjs';
 import { pollDelta, primeDelta } from './onedrive-delta.mjs';
@@ -298,10 +298,8 @@ class OneDriveProvider extends VfsProviderImplementation {
     return this.#withRequest(requestId, async (signal) => {
       const resp = await graphFetch('DELETE', pathToGraphUrl(conn, path, ':'),
         this.#callOpts(conn.accountId, signal, { raw: true }));
-      if (resp.status !== 204 && resp.status !== 404 && !resp.ok) {
-        // Non-404 errors go through the mapper for a proper throw.
-        await graphFetch('DELETE', pathToGraphUrl(conn, path, ':'),
-          this.#callOpts(conn.accountId, signal));
+      if (resp.status !== 204 && resp.status !== 404) {
+        await throwGraphError(resp);
       }
       await this.#broadcastChanges(conn, [{ kind, action: 'deleted', target: { path } }]);
     });
@@ -381,17 +379,7 @@ class OneDriveProvider extends VfsProviderImplementation {
             body:    JSON.stringify(body),
             raw:     true,
           }));
-        if (resp.status !== 202) {
-          // Surface anything unexpected via the error mapper.
-          if (!resp.ok) {
-            await graphFetch('POST',
-              `${GRAPH_BASE}/drives/${encodeURIComponent(conn.driveId)}/items/${encodeURIComponent(srcItem.id)}/copy`,
-              this.#callOpts(conn.accountId, signal, {
-                headers: { 'Content-Type': 'application/json' },
-                body:    JSON.stringify(body),
-              }));
-          }
-        }
+        if (!resp.ok) await throwGraphError(resp);
         const monitorUrl = resp.headers.get('Location');
         if (monitorUrl) await this.#awaitCopy(monitorUrl, requestId, signal);
 
@@ -556,9 +544,8 @@ class OneDriveProvider extends VfsProviderImplementation {
         // path handles the entire subtree server-side.
         const delResp = await graphFetch('DELETE', pathToGraphUrl(conn, srcPath, ':'),
           this.#callOpts(conn.accountId, signal, { raw: true }));
-        if (delResp.status !== 204 && delResp.status !== 404 && !delResp.ok) {
-          await graphFetch('DELETE', pathToGraphUrl(conn, srcPath, ':'),
-            this.#callOpts(conn.accountId, signal));
+        if (delResp.status !== 204 && delResp.status !== 404) {
+          await throwGraphError(delResp);
         }
       }
 

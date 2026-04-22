@@ -161,7 +161,7 @@ export async function graphFetch(method, url, opts) {
   );
 
   if (raw || resp.ok) return resp;
-  await _throwGraphError(resp);
+  await throwGraphError(resp);
 }
 
 /**
@@ -250,7 +250,7 @@ export async function graphBatch(subrequests, opts) {
   );
 
   if (!resp.ok) {
-    await _throwGraphError(resp);
+    await throwGraphError(resp);
   }
 
   const payload = await resp.json();
@@ -278,7 +278,7 @@ export function sleepAbortable(ms, signal) {
   });
 }
 
-async function _throwGraphError(resp) {
+export async function throwGraphError(resp) {
   const status = resp.status;
   const bodyText = await resp.text().catch(() => '');
 
