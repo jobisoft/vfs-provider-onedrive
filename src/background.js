@@ -799,15 +799,6 @@ class OneDriveProvider extends VfsProviderImplementation {
 
   // ── Alarm-driven polling ──────────────────────────────────────────────────
 
-  /** Creates or replaces the poll alarm for a connection. */
-  async ensurePollAlarm(storageId, pollInterval) {
-    const name = ALARM_PREFIX + storageId;
-    await browser.alarms.clear(name);
-    const sec = Math.max(POLL_MIN_SEC, pollInterval | 0);
-    if (!pollInterval || pollInterval <= 0) return;
-    browser.alarms.create(name, { periodInMinutes: sec / 60 });
-  }
-
   async clearPollAlarm(storageId) {
     await browser.alarms.clear(ALARM_PREFIX + storageId);
   }
@@ -849,14 +840,28 @@ class OneDriveProvider extends VfsProviderImplementation {
    */
   async reconcileAlarms() {
     const conns = await this.#getCachedConnections();
+    const existing = await browser.alarms.getAll();
+    const existingByName = new Map(
+      existing.filter(a => a.name.startsWith(ALARM_PREFIX)).map(a => [a.name, a])
+    );
     const wanted = new Set();
 
     for (const c of conns) {
+      const name = ALARM_PREFIX + c.storageId;
+
       if (c.pollInterval && c.pollInterval > 0) {
-        wanted.add(ALARM_PREFIX + c.storageId);
-        await this.ensurePollAlarm(c.storageId, c.pollInterval);
-      } else {
-        await this.clearPollAlarm(c.storageId);
+        wanted.add(name);
+        const desired = Math.max(POLL_MIN_SEC, c.pollInterval | 0) / 60;
+        const current = existingByName.get(name);
+        // Only rewrite when period differs — otherwise preserve the alarm's
+        // scheduled-time so rapid reconciles (e.g. deltaLink persist churn)
+        // don't keep resetting the poll clock.
+        if (!current || current.periodInMinutes !== desired) {
+          await browser.alarms.clear(name);
+          browser.alarms.create(name, { periodInMinutes: desired });
+        }
+      } else if (existingByName.has(name)) {
+        await browser.alarms.clear(name);
       }
 
       // Prime missing deltaLink lazily so the first poll tick has a baseline.
@@ -869,7 +874,6 @@ class OneDriveProvider extends VfsProviderImplementation {
     }
 
     // Clear any orphan alarms (alarm exists but no matching connection).
-    const existing = await browser.alarms.getAll();
     for (const a of existing) {
       if (a.name.startsWith(ALARM_PREFIX) && !wanted.has(a.name)) {
         await browser.alarms.clear(a.name);
