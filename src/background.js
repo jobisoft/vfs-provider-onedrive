@@ -90,8 +90,18 @@ class OneDriveProvider extends VfsProviderImplementation {
 
   async #withRequest(requestId, fn) {
     const signal = this.#signal(requestId);
+    // MV3 event pages suspend after ~30s of no pending WebExtension-API work.
+    // A cheap API call every 15s ticks the idle timer so long-running ops
+    // (large uploads, folder copies, merge trees) don't get cut off mid-flight.
+    const keepAlive = setInterval(
+      () => browser.runtime.getPlatformInfo().catch(() => { }),
+      15_000,
+    );
     try { return await fn(signal); }
-    finally { this.#done(requestId); }
+    finally {
+      clearInterval(keepAlive);
+      this.#done(requestId);
+    }
   }
 
   // ── Account / connection lookup ───────────────────────────────────────────
