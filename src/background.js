@@ -54,6 +54,11 @@ class OneDriveProvider extends VfsProviderImplementation {
   #refreshing = new Map();
   /** driveId → rootItemId — avoids repeat GETs to /drives/{d}/root for root-parent ops */
   #rootIds = new Map();
+  /** Cached loadConnections() result; cleared on any CONNECTION_PREFIX storage change. */
+  #connectionCache = null;
+  /** Bumped on every cache invalidation so an in-flight load that started before
+   *  the invalidation can detect the race and decline to populate the cache. */
+  #connectionCacheVersion = 0;
 
   constructor() {
     super({
@@ -133,8 +138,8 @@ class OneDriveProvider extends VfsProviderImplementation {
    * when any one of them performs a write.
    */
   async #peerStorageIds(accountId, driveId, rootItemId) {
-    const all = await browser.storage.local.get(null);
-    return loadConnections(all)
+    const conns = await this.#getCachedConnections();
+    return conns
       .filter(c =>
         c.accountId  === accountId &&
         c.driveId    === driveId   &&
@@ -144,8 +149,24 @@ class OneDriveProvider extends VfsProviderImplementation {
   }
 
   async #allStorageIdsForAccount(accountId) {
+    const conns = await this.#getCachedConnections();
+    return conns.filter(c => c.accountId === accountId).map(c => c.storageId);
+  }
+
+  async #getCachedConnections() {
+    if (this.#connectionCache) return this.#connectionCache;
+    const version = this.#connectionCacheVersion;
     const all = await browser.storage.local.get(null);
-    return loadConnections(all).filter(c => c.accountId === accountId).map(c => c.storageId);
+    const conns = loadConnections(all);
+    if (version === this.#connectionCacheVersion) {
+      this.#connectionCache = conns;
+    }
+    return conns;
+  }
+
+  clearConnectionCache() {
+    this.#connectionCache = null;
+    this.#connectionCacheVersion++;
   }
 
   async #broadcastChanges(conn, changes) {
@@ -827,8 +848,7 @@ class OneDriveProvider extends VfsProviderImplementation {
    * and connection storage changes. Idempotent.
    */
   async reconcileAlarms() {
-    const all = await browser.storage.local.get(null);
-    const conns = loadConnections(all);
+    const conns = await this.#getCachedConnections();
     const wanted = new Set();
 
     for (const c of conns) {
@@ -905,7 +925,10 @@ browser.storage.onChanged.addListener((changes, area) => {
   for (const key of Object.keys(changes)) {
     if (key.startsWith(CONNECTION_PREFIX)) { touched = true; break; }
   }
-  if (touched) provider.reconcileAlarms();
+  if (touched) {
+    provider.clearConnectionCache();
+    provider.reconcileAlarms();
+  }
 });
 
 // Clean up when a client revokes a connection via the picker.
