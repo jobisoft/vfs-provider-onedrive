@@ -11,10 +11,8 @@
   "version": "1.0.0",
   "description": "__MSG_extensionDescription__",
   "icons": {
-    "16": "logo/logo_16.png",
-    "32": "logo/logo_32.png",
-    "64": "logo/logo_64.png",
-    "128": "logo/logo_128.png"
+    "48": "logo/logo_48.png",
+    "96": "logo/logo_96.png"
   },
   "permissions": [
     "storage",
