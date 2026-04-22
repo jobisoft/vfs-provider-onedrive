@@ -19,7 +19,7 @@ import {
   accountKey, connectionKey, loadConnections,
 } from './onedrive-storage.mjs';
 import {
-  GRAPH_BASE, driveRootBase, pathToGraphUrl, parentOf, basenameOf,
+  GRAPH_BASE, pathToGraphUrl, parentOf, basenameOf,
   mapGraphItem, graphFetch, graphJSON, graphBatch, BATCH_MAX_REQUESTS,
   sleepAbortable,
 } from './onedrive-graph.mjs';
@@ -187,7 +187,7 @@ class OneDriveProvider extends VfsProviderImplementation {
   // ── Read operations ───────────────────────────────────────────────────────
 
   async onList(requestId, storageId, path) {
-    const { conn, account } = await this.#bundle(storageId);
+    const conn = await this.#connection(storageId);
     const signal = this.#signal(requestId);
     try {
       const results = [];
@@ -196,7 +196,7 @@ class OneDriveProvider extends VfsProviderImplementation {
       ) + '?$select=id,name,size,folder,file,lastModifiedDateTime,parentReference,eTag&$top=200';
 
       while (url) {
-        const page = await graphJSON('GET', url, this.#callOpts(account.accountId ?? conn.accountId, signal));
+        const page = await graphJSON('GET', url, this.#callOpts(conn.accountId, signal));
         for (const item of page.value ?? []) {
           const entry = mapGraphItem(conn, item);
           results.push(entry);
@@ -643,7 +643,7 @@ class OneDriveProvider extends VfsProviderImplementation {
           body: chunk,
           signal,
         });
-        if (!resp.ok && resp.status !== 202 && resp.status !== 201 && resp.status !== 200) {
+        if (!resp.ok) {
           if (resp.status === 409) {
             throw Object.assign(new Error(browser.i18n.getMessage('errorFileExists')), { code: 'E:EXIST' });
           }
@@ -746,9 +746,7 @@ class OneDriveProvider extends VfsProviderImplementation {
   async #createFolder(conn, path, mergeIfExists, signal) {
     const parent = parentOf(path);
     const name = basenameOf(path);
-    const parentSuffix = parent === '/'
-      ? (conn.rootItemId ? '/children' : '/children')
-      : ':/children';
+    const parentSuffix = parent === '/' ? '/children' : ':/children';
     const url = pathToGraphUrl(conn, parent, parentSuffix);
 
     // Always `fail` on conflict. For merge-mode we interpret the resulting

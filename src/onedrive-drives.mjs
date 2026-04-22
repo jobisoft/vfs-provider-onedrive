@@ -42,7 +42,6 @@ export async function listAvailableDrives(accessToken, signal) {
     }
   } catch (e) {
     ownErr = e;
-    console.warn('[onedrive] /me/drive failed:', e);
   }
 
   // Shared-with-me top-level items. Each result item has `remoteItem.*`
@@ -74,7 +73,6 @@ export async function listAvailableDrives(accessToken, signal) {
     }
   } catch (e) {
     sharedErr = e;
-    console.warn('[onedrive] /me/drive/sharedWithMe failed:', e);
   }
 
   // If nothing was found, surface the first error we saw so the UI can

@@ -2,7 +2,7 @@ import { localizeDocument } from '../vendor/i18n.mjs';
 import { runInteractiveFlow } from '../onedrive-auth.mjs';
 import {
   ACCOUNT_PREFIX, CONNECTION_PREFIX,
-  accountKey, connectionKey, loadAccounts, loadConnections,
+  accountKey, connectionKey, loadAccounts,
 } from '../onedrive-storage.mjs';
 
 const i18n = (key, subs) => browser.i18n.getMessage(key, subs);
