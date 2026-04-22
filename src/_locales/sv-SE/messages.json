@@ -3,248 +3,248 @@
     "message": "VFS-Provider: OneDrive"
   },
   "extensionDescription": {
-    "message": "Microsoft OneDrive storage provider for the VFS Toolkit."
+    "message": "Microsoft OneDrive-lagringsleverantör för VFS Toolkit."
   },
 
   "setupTitle": {
-    "message": "Connect to OneDrive"
+    "message": "Anslut till OneDrive"
   },
   "setupSubtitleDefaultAddon": {
-    "message": "An add-on"
+    "message": "Ett tillägg"
   },
   "setupSubtitleSuffix": {
-    "message": " wants to connect to a OneDrive account."
+    "message": " vill ansluta till ett OneDrive-konto."
   },
   "setupLabelConnName": {
-    "message": "Connection name"
+    "message": "Anslutningsnamn"
   },
   "setupLabelClientId": {
-    "message": "Azure application (client) ID"
+    "message": "Azure applikations-ID (client ID)"
   },
   "setupPlaceholderClientId": {
     "message": "00000000-0000-0000-0000-000000000000"
   },
   "setupAdvancedSummary": {
-    "message": "Use a custom Azure app (advanced)"
+    "message": "Använd en anpassad Azure-app (avancerat)"
   },
   "setupHintClientId": {
-    "message": "Leave empty to use the bundled default Azure app. Provide your own only if you've registered a separate app."
+    "message": "Lämna tomt för att använda den medföljande standard-Azure-appen. Fyll bara i om du har registrerat en egen app."
   },
   "setupHintClientIdAdvanced": {
-    "message": "Required Azure app settings: Mobile and desktop applications platform with the https://login.microsoftonline.com/common/oauth2/nativeclient redirect URI, Allow public client flows = Yes, and delegated Microsoft Graph permissions Files.ReadWrite.All + User.Read + offline_access."
+    "message": "Nödvändiga Azure-inställningar: plattformen „Mobile and desktop applications\" med omdirigerings-URI https://login.microsoftonline.com/common/oauth2/nativeclient, „Allow public client flows\" = Ja, samt delegerade Microsoft Graph-behörigheter Files.ReadWrite.All + User.Read + offline_access."
   },
   "setupStatusSigningIn": {
-    "message": "Signing in via popup window…"
+    "message": "Loggar in via popup-fönster…"
   },
   "setupErrorPopupClosed": {
-    "message": "The sign-in window was closed before authentication completed."
+    "message": "Inloggningsfönstret stängdes innan autentiseringen slutfördes."
   },
   "setupErrorStateMismatch": {
-    "message": "OAuth state mismatch — aborted for safety."
+    "message": "OAuth-tillstånd stämmer inte — avbrutet av säkerhetsskäl."
   },
   "setupErrorOauthNoCode": {
-    "message": "Authorization was not granted."
+    "message": "Behörighet beviljades inte."
   },
   "setupLabelDrive": {
-    "message": "Drive"
+    "message": "Enhet"
   },
   "setupBtnSignIn": {
-    "message": "Sign in with Microsoft"
+    "message": "Logga in med Microsoft"
   },
   "setupBtnConnect": {
-    "message": "Connect"
+    "message": "Anslut"
   },
   "setupBtnCancel": {
-    "message": "Cancel"
+    "message": "Avbryt"
   },
   "setupStatusAuthenticating": {
-    "message": "Signing in to Microsoft…"
+    "message": "Loggar in på Microsoft…"
   },
   "setupStatusLoadingDrives": {
-    "message": "Loading drives…"
+    "message": "Läser in enheter…"
   },
   "setupStatusSaving": {
-    "message": "Saving connection…"
+    "message": "Sparar anslutning…"
   },
   "setupErrorNoDrives": {
-    "message": "No drives available for this account."
+    "message": "Inga enheter tillgängliga för detta konto."
   },
   "setupErrorNotReady": {
-    "message": "Please complete sign-in and pick a drive first."
+    "message": "Logga in och välj en enhet först."
   },
   "setupReuseLabel": {
-    "message": "Use an existing account"
+    "message": "Använd ett befintligt konto"
   },
   "setupReuseNew": {
-    "message": "- Create new account -"
+    "message": "- Skapa nytt konto -"
   },
 
   "driveKindOwn": {
-    "message": "Own"
+    "message": "Egen"
   },
   "driveKindShared": {
-    "message": "Shared with me"
+    "message": "Delad med mig"
   },
   "driveOwnLabel": {
-    "message": "My OneDrive"
+    "message": "Min OneDrive"
   },
   "driveSharedFallback": {
-    "message": "Shared item"
+    "message": "Delat objekt"
   },
 
   "configTitle": {
-    "message": "OneDrive Settings"
+    "message": "OneDrive-inställningar"
   },
   "configSectionConnection": {
-    "message": "Connection"
+    "message": "Anslutning"
   },
   "configSectionAccount": {
-    "message": "Account"
+    "message": "Konto"
   },
   "configBtnManageAccounts": {
-    "message": "Manage accounts"
+    "message": "Hantera konton"
   },
   "configLabelConnName": {
-    "message": "Connection name"
+    "message": "Anslutningsnamn"
   },
   "configHintConnName": {
-    "message": "Label shown in the storage picker."
+    "message": "Etikett som visas i lagringsväljaren."
   },
   "configLabelPollInterval": {
-    "message": "Change-detection interval (seconds, minimum 60)"
+    "message": "Intervall för ändringsdetektering (sekunder, minst 60)"
   },
   "configHintPollInterval": {
-    "message": "How often to check OneDrive for external changes. Set to 0 to disable. Minimum is 60 seconds (the browser's alarm floor)."
+    "message": "Hur ofta OneDrive ska kontrolleras för externa ändringar. Ange 0 för att inaktivera. Minimum är 60 sekunder (webbläsarens larmschemaläggares nedre gräns)."
   },
   "configLabelUpn": {
-    "message": "User principal name"
+    "message": "Användarens huvudnamn"
   },
   "configLabelDrive": {
-    "message": "Drive"
+    "message": "Enhet"
   },
   "configBtnSave": {
-    "message": "Save"
+    "message": "Spara"
   },
   "configStatusSaveFailed": {
-    "message": "Failed to save settings."
+    "message": "Det gick inte att spara inställningarna."
   },
   "configStatusSaved": {
-    "message": "Settings saved."
+    "message": "Inställningar sparade."
   },
 
   "errorUnknownConnection": {
-    "message": "Unknown or unauthorized connection."
+    "message": "Okänd eller obehörig anslutning."
   },
   "errorAuth": {
-    "message": "Sign-in failed or expired. Please reconnect in the provider Options page."
+    "message": "Inloggning misslyckades eller har gått ut. Anslut igen från leverantörens inställningssida."
   },
   "errorFileExists": {
-    "message": "A file or folder with that name already exists."
+    "message": "En fil eller mapp med det namnet finns redan."
   },
   "errorFolderExists": {
-    "message": "A folder with that name already exists."
+    "message": "En mapp med det namnet finns redan."
   },
   "errorHttp": {
     "message": "OneDrive HTTP $STATUS$",
     "placeholders": { "status": { "content": "$1" } }
   },
   "errorHttpTitle": {
-    "message": "OneDrive error ($STATUS$)",
+    "message": "OneDrive-fel ($STATUS$)",
     "placeholders": { "status": { "content": "$1" } }
   },
   "errorHttpDescription": {
-    "message": "Microsoft Graph returned an unexpected HTTP $STATUS$ response.",
+    "message": "Microsoft Graph returnerade ett oväntat HTTP $STATUS$-svar.",
     "placeholders": { "status": { "content": "$1" } }
   },
   "errorLockedTitle": {
-    "message": "Item is locked"
+    "message": "Objektet är låst"
   },
   "errorLockedDescription": {
-    "message": "OneDrive reports the item is currently locked by another user or process."
+    "message": "OneDrive rapporterar att objektet just nu är låst av en annan användare eller process."
   },
   "errorRateLimitedTitle": {
-    "message": "Rate limited"
+    "message": "Hastighetsbegränsning nådd"
   },
   "errorRateLimitedDescription": {
-    "message": "OneDrive is throttling requests. Try again in a few moments."
+    "message": "OneDrive begränsar förfrågningar. Försök igen om en stund."
   },
   "errorQuotaExceededTitle": {
-    "message": "Quota exceeded"
+    "message": "Kvoten överskriden"
   },
   "errorQuotaExceededDescription": {
-    "message": "The OneDrive account has no storage space left."
+    "message": "OneDrive-kontot har inget lagringsutrymme kvar."
   },
 
   "optionsPageTitle": {
-    "message": "OneDrive Accounts & Connections"
+    "message": "OneDrive-konton och anslutningar"
   },
   "optionsPageSubtitle": {
-    "message": "Manage Microsoft accounts and the add-on connections that use them."
+    "message": "Hantera Microsoft-konton och de tilläggsanslutningar som använder dem."
   },
   "optionsAccountsHeading": {
-    "message": "Accounts"
+    "message": "Konton"
   },
   "optionsThAccount": {
-    "message": "Account"
+    "message": "Konto"
   },
   "optionsAccountsEmpty": {
-    "message": "No accounts."
+    "message": "Inga konton."
   },
   "optionsBtnAddAccount": {
-    "message": "Add Account"
+    "message": "Lägg till konto"
   },
   "optionsAddAccountTitle": {
-    "message": "Add OneDrive Account"
+    "message": "Lägg till OneDrive-konto"
   },
   "optionsBtnSignInAndAdd": {
-    "message": "Sign in and add"
+    "message": "Logga in och lägg till"
   },
   "optionsBtnSaveAccount": {
-    "message": "Save"
+    "message": "Spara"
   },
   "optionsBtnEdit": {
-    "message": "Edit"
+    "message": "Redigera"
   },
   "optionsEditAccountTitle": {
-    "message": "Edit OneDrive Account"
+    "message": "Redigera OneDrive-konto"
   },
   "optionsLabelAccountName": {
-    "message": "Account name"
+    "message": "Kontonamn"
   },
   "optionsPlaceholderAccountName": {
-    "message": "My OneDrive"
+    "message": "Min OneDrive"
   },
   "optionsAccountNotice": {
-    "message": "Accounts can be pre-created here or added by an add-on during its setup flow. Add-ons can reuse any existing account when connecting, including mounting additional drives. Removing an account deletes its stored credentials and revokes access for all connections that use it."
+    "message": "Konton kan förskapas här eller läggas till av ett tillägg under dess installationsflöde. Tillägg kan återanvända ett befintligt konto vid anslutning. Att ta bort ett konto raderar de sparade inloggningsuppgifterna och återkallar åtkomsten för alla anslutningar som använder det."
   },
   "optionsGrantedHeading": {
-    "message": "Active Connections"
+    "message": "Aktiva anslutningar"
   },
   "optionsThConnection": {
-    "message": "Connection"
+    "message": "Anslutning"
   },
   "optionsEmptyState": {
-    "message": "No active connections."
+    "message": "Inga aktiva anslutningar."
   },
   "optionsNotice": {
-    "message": "Revoking a connection removes the add-on's access to the associated drive. The underlying account remains signed in."
+    "message": "Att återkalla en anslutning tar bort tilläggets åtkomst till den tillhörande enheten. Det underliggande kontot förblir inloggat."
   },
   "optionsErrorAccountExists": {
-    "message": "An account for this Microsoft user already exists."
+    "message": "Ett konto för denna Microsoft-användare finns redan."
   },
   "optionsConnAccount": {
-    "message": "Account:"
+    "message": "Konto:"
   },
   "optionsConnDrive": {
-    "message": "Drive:"
+    "message": "Enhet:"
   },
   "optionsConnExtension": {
-    "message": "Add-on:"
+    "message": "Tillägg:"
   },
   "btnDelete": {
-    "message": "Delete"
+    "message": "Ta bort"
   },
   "btnRevoke": {
-    "message": "Revoke"
+    "message": "Återkalla"
   }
 }

@@ -3,248 +3,248 @@
     "message": "VFS-Provider: OneDrive"
   },
   "extensionDescription": {
-    "message": "Microsoft OneDrive storage provider for the VFS Toolkit."
+    "message": "Provedor de armazenamento Microsoft OneDrive para o VFS Toolkit."
   },
 
   "setupTitle": {
-    "message": "Connect to OneDrive"
+    "message": "Conectar ao OneDrive"
   },
   "setupSubtitleDefaultAddon": {
-    "message": "An add-on"
+    "message": "Um complemento"
   },
   "setupSubtitleSuffix": {
-    "message": " wants to connect to a OneDrive account."
+    "message": " deseja conectar-se a uma conta do OneDrive."
   },
   "setupLabelConnName": {
-    "message": "Connection name"
+    "message": "Nome da conexão"
   },
   "setupLabelClientId": {
-    "message": "Azure application (client) ID"
+    "message": "ID do aplicativo Azure (client ID)"
   },
   "setupPlaceholderClientId": {
     "message": "00000000-0000-0000-0000-000000000000"
   },
   "setupAdvancedSummary": {
-    "message": "Use a custom Azure app (advanced)"
+    "message": "Usar um aplicativo Azure personalizado (avançado)"
   },
   "setupHintClientId": {
-    "message": "Leave empty to use the bundled default Azure app. Provide your own only if you've registered a separate app."
+    "message": "Deixe em branco para usar o aplicativo Azure padrão embutido. Preencha apenas se você registrou seu próprio aplicativo."
   },
   "setupHintClientIdAdvanced": {
-    "message": "Required Azure app settings: Mobile and desktop applications platform with the https://login.microsoftonline.com/common/oauth2/nativeclient redirect URI, Allow public client flows = Yes, and delegated Microsoft Graph permissions Files.ReadWrite.All + User.Read + offline_access."
+    "message": "Configurações obrigatórias do Azure: plataforma «Mobile and desktop applications» com a URI de redirecionamento https://login.microsoftonline.com/common/oauth2/nativeclient, «Allow public client flows» = Sim e permissões delegadas do Microsoft Graph Files.ReadWrite.All + User.Read + offline_access."
   },
   "setupStatusSigningIn": {
-    "message": "Signing in via popup window…"
+    "message": "Entrando via janela pop-up…"
   },
   "setupErrorPopupClosed": {
-    "message": "The sign-in window was closed before authentication completed."
+    "message": "A janela de login foi fechada antes de a autenticação ser concluída."
   },
   "setupErrorStateMismatch": {
-    "message": "OAuth state mismatch — aborted for safety."
+    "message": "Estado OAuth não confere — cancelado por segurança."
   },
   "setupErrorOauthNoCode": {
-    "message": "Authorization was not granted."
+    "message": "A autorização não foi concedida."
   },
   "setupLabelDrive": {
-    "message": "Drive"
+    "message": "Unidade"
   },
   "setupBtnSignIn": {
-    "message": "Sign in with Microsoft"
+    "message": "Entrar com a Microsoft"
   },
   "setupBtnConnect": {
-    "message": "Connect"
+    "message": "Conectar"
   },
   "setupBtnCancel": {
-    "message": "Cancel"
+    "message": "Cancelar"
   },
   "setupStatusAuthenticating": {
-    "message": "Signing in to Microsoft…"
+    "message": "Entrando na Microsoft…"
   },
   "setupStatusLoadingDrives": {
-    "message": "Loading drives…"
+    "message": "Carregando unidades…"
   },
   "setupStatusSaving": {
-    "message": "Saving connection…"
+    "message": "Salvando conexão…"
   },
   "setupErrorNoDrives": {
-    "message": "No drives available for this account."
+    "message": "Nenhuma unidade disponível para esta conta."
   },
   "setupErrorNotReady": {
-    "message": "Please complete sign-in and pick a drive first."
+    "message": "Conclua o login e selecione uma unidade primeiro."
   },
   "setupReuseLabel": {
-    "message": "Use an existing account"
+    "message": "Usar uma conta existente"
   },
   "setupReuseNew": {
-    "message": "- Create new account -"
+    "message": "- Criar nova conta -"
   },
 
   "driveKindOwn": {
-    "message": "Own"
+    "message": "Própria"
   },
   "driveKindShared": {
-    "message": "Shared with me"
+    "message": "Compartilhado comigo"
   },
   "driveOwnLabel": {
-    "message": "My OneDrive"
+    "message": "Meu OneDrive"
   },
   "driveSharedFallback": {
-    "message": "Shared item"
+    "message": "Item compartilhado"
   },
 
   "configTitle": {
-    "message": "OneDrive Settings"
+    "message": "Configurações do OneDrive"
   },
   "configSectionConnection": {
-    "message": "Connection"
+    "message": "Conexão"
   },
   "configSectionAccount": {
-    "message": "Account"
+    "message": "Conta"
   },
   "configBtnManageAccounts": {
-    "message": "Manage accounts"
+    "message": "Gerenciar contas"
   },
   "configLabelConnName": {
-    "message": "Connection name"
+    "message": "Nome da conexão"
   },
   "configHintConnName": {
-    "message": "Label shown in the storage picker."
+    "message": "Rótulo exibido no seletor de armazenamento."
   },
   "configLabelPollInterval": {
-    "message": "Change-detection interval (seconds, minimum 60)"
+    "message": "Intervalo de detecção de alterações (segundos, mínimo 60)"
   },
   "configHintPollInterval": {
-    "message": "How often to check OneDrive for external changes. Set to 0 to disable. Minimum is 60 seconds (the browser's alarm floor)."
+    "message": "Com que frequência verificar alterações externas no OneDrive. Defina 0 para desativar. O mínimo é 60 segundos (limite do agendador de alarmes do navegador)."
   },
   "configLabelUpn": {
-    "message": "User principal name"
+    "message": "Nome principal do usuário"
   },
   "configLabelDrive": {
-    "message": "Drive"
+    "message": "Unidade"
   },
   "configBtnSave": {
-    "message": "Save"
+    "message": "Salvar"
   },
   "configStatusSaveFailed": {
-    "message": "Failed to save settings."
+    "message": "Falha ao salvar as configurações."
   },
   "configStatusSaved": {
-    "message": "Settings saved."
+    "message": "Configurações salvas."
   },
 
   "errorUnknownConnection": {
-    "message": "Unknown or unauthorized connection."
+    "message": "Conexão desconhecida ou não autorizada."
   },
   "errorAuth": {
-    "message": "Sign-in failed or expired. Please reconnect in the provider Options page."
+    "message": "Falha no login ou sessão expirada. Reconecte-se na página de opções do provedor."
   },
   "errorFileExists": {
-    "message": "A file or folder with that name already exists."
+    "message": "Já existe um arquivo ou pasta com esse nome."
   },
   "errorFolderExists": {
-    "message": "A folder with that name already exists."
+    "message": "Já existe uma pasta com esse nome."
   },
   "errorHttp": {
     "message": "OneDrive HTTP $STATUS$",
     "placeholders": { "status": { "content": "$1" } }
   },
   "errorHttpTitle": {
-    "message": "OneDrive error ($STATUS$)",
+    "message": "Erro do OneDrive ($STATUS$)",
     "placeholders": { "status": { "content": "$1" } }
   },
   "errorHttpDescription": {
-    "message": "Microsoft Graph returned an unexpected HTTP $STATUS$ response.",
+    "message": "O Microsoft Graph retornou uma resposta HTTP $STATUS$ inesperada.",
     "placeholders": { "status": { "content": "$1" } }
   },
   "errorLockedTitle": {
-    "message": "Item is locked"
+    "message": "Item bloqueado"
   },
   "errorLockedDescription": {
-    "message": "OneDrive reports the item is currently locked by another user or process."
+    "message": "O OneDrive informa que o item está atualmente bloqueado por outro usuário ou processo."
   },
   "errorRateLimitedTitle": {
-    "message": "Rate limited"
+    "message": "Limite de taxa atingido"
   },
   "errorRateLimitedDescription": {
-    "message": "OneDrive is throttling requests. Try again in a few moments."
+    "message": "O OneDrive está limitando as solicitações. Tente novamente em alguns instantes."
   },
   "errorQuotaExceededTitle": {
-    "message": "Quota exceeded"
+    "message": "Cota excedida"
   },
   "errorQuotaExceededDescription": {
-    "message": "The OneDrive account has no storage space left."
+    "message": "A conta do OneDrive não tem mais espaço de armazenamento disponível."
   },
 
   "optionsPageTitle": {
-    "message": "OneDrive Accounts & Connections"
+    "message": "Contas e conexões do OneDrive"
   },
   "optionsPageSubtitle": {
-    "message": "Manage Microsoft accounts and the add-on connections that use them."
+    "message": "Gerencie contas da Microsoft e as conexões de complementos que as utilizam."
   },
   "optionsAccountsHeading": {
-    "message": "Accounts"
+    "message": "Contas"
   },
   "optionsThAccount": {
-    "message": "Account"
+    "message": "Conta"
   },
   "optionsAccountsEmpty": {
-    "message": "No accounts."
+    "message": "Nenhuma conta."
   },
   "optionsBtnAddAccount": {
-    "message": "Add Account"
+    "message": "Adicionar conta"
   },
   "optionsAddAccountTitle": {
-    "message": "Add OneDrive Account"
+    "message": "Adicionar conta do OneDrive"
   },
   "optionsBtnSignInAndAdd": {
-    "message": "Sign in and add"
+    "message": "Entrar e adicionar"
   },
   "optionsBtnSaveAccount": {
-    "message": "Save"
+    "message": "Salvar"
   },
   "optionsBtnEdit": {
-    "message": "Edit"
+    "message": "Editar"
   },
   "optionsEditAccountTitle": {
-    "message": "Edit OneDrive Account"
+    "message": "Editar conta do OneDrive"
   },
   "optionsLabelAccountName": {
-    "message": "Account name"
+    "message": "Nome da conta"
   },
   "optionsPlaceholderAccountName": {
-    "message": "My OneDrive"
+    "message": "Meu OneDrive"
   },
   "optionsAccountNotice": {
-    "message": "Accounts can be pre-created here or added by an add-on during its setup flow. Add-ons can reuse any existing account when connecting, including mounting additional drives. Removing an account deletes its stored credentials and revokes access for all connections that use it."
+    "message": "As contas podem ser pré-criadas aqui ou adicionadas por um complemento durante seu fluxo de configuração. Os complementos podem reutilizar qualquer conta existente ao se conectar. Remover uma conta apaga as credenciais armazenadas e revoga o acesso de todas as conexões que a utilizam."
   },
   "optionsGrantedHeading": {
-    "message": "Active Connections"
+    "message": "Conexões ativas"
   },
   "optionsThConnection": {
-    "message": "Connection"
+    "message": "Conexão"
   },
   "optionsEmptyState": {
-    "message": "No active connections."
+    "message": "Nenhuma conexão ativa."
   },
   "optionsNotice": {
-    "message": "Revoking a connection removes the add-on's access to the associated drive. The underlying account remains signed in."
+    "message": "Revogar uma conexão remove o acesso do complemento à unidade associada. A conta subjacente permanece conectada."
   },
   "optionsErrorAccountExists": {
-    "message": "An account for this Microsoft user already exists."
+    "message": "Já existe uma conta para este usuário Microsoft."
   },
   "optionsConnAccount": {
-    "message": "Account:"
+    "message": "Conta:"
   },
   "optionsConnDrive": {
-    "message": "Drive:"
+    "message": "Unidade:"
   },
   "optionsConnExtension": {
-    "message": "Add-on:"
+    "message": "Complemento:"
   },
   "btnDelete": {
-    "message": "Delete"
+    "message": "Excluir"
   },
   "btnRevoke": {
-    "message": "Revoke"
+    "message": "Revogar"
   }
 }

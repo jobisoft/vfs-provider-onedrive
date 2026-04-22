@@ -215,7 +215,7 @@
     "message": "My OneDrive"
   },
   "optionsAccountNotice": {
-    "message": "Accounts can be pre-created here or added by an add-on during its setup flow. Add-ons can reuse any existing account when connecting, including mounting additional drives. Removing an account deletes its stored credentials and revokes access for all connections that use it."
+    "message": "Accounts can be pre-created here or added by an add-on during its setup flow. Add-ons can reuse any existing account when connecting. Removing an account deletes its stored credentials and revokes access for all connections that use it."
   },
   "optionsGrantedHeading": {
     "message": "Active Connections"

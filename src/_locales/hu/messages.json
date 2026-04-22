@@ -3,248 +3,248 @@
     "message": "VFS-Provider: OneDrive"
   },
   "extensionDescription": {
-    "message": "Microsoft OneDrive storage provider for the VFS Toolkit."
+    "message": "Microsoft OneDrive tárhelyszolgáltató a VFS Toolkit számára."
   },
 
   "setupTitle": {
-    "message": "Connect to OneDrive"
+    "message": "Csatlakozás a OneDrive-hoz"
   },
   "setupSubtitleDefaultAddon": {
-    "message": "An add-on"
+    "message": "Egy kiegészítő"
   },
   "setupSubtitleSuffix": {
-    "message": " wants to connect to a OneDrive account."
+    "message": " egy OneDrive-fiókhoz szeretne csatlakozni."
   },
   "setupLabelConnName": {
-    "message": "Connection name"
+    "message": "Kapcsolat neve"
   },
   "setupLabelClientId": {
-    "message": "Azure application (client) ID"
+    "message": "Azure alkalmazás-azonosító (client ID)"
   },
   "setupPlaceholderClientId": {
     "message": "00000000-0000-0000-0000-000000000000"
   },
   "setupAdvancedSummary": {
-    "message": "Use a custom Azure app (advanced)"
+    "message": "Egyéni Azure-alkalmazás használata (haladó)"
   },
   "setupHintClientId": {
-    "message": "Leave empty to use the bundled default Azure app. Provide your own only if you've registered a separate app."
+    "message": "Hagyja üresen, ha a beépített alapértelmezett Azure-alkalmazást szeretné használni. Csak akkor töltse ki, ha saját alkalmazást regisztrált."
   },
   "setupHintClientIdAdvanced": {
-    "message": "Required Azure app settings: Mobile and desktop applications platform with the https://login.microsoftonline.com/common/oauth2/nativeclient redirect URI, Allow public client flows = Yes, and delegated Microsoft Graph permissions Files.ReadWrite.All + User.Read + offline_access."
+    "message": "Szükséges Azure-alkalmazás-beállítások: „Mobile and desktop applications\" platform a https://login.microsoftonline.com/common/oauth2/nativeclient átirányítási URI-val, „Allow public client flows\" = Igen, és delegált Microsoft Graph-jogosultságok Files.ReadWrite.All + User.Read + offline_access."
   },
   "setupStatusSigningIn": {
-    "message": "Signing in via popup window…"
+    "message": "Bejelentkezés felugró ablakon keresztül…"
   },
   "setupErrorPopupClosed": {
-    "message": "The sign-in window was closed before authentication completed."
+    "message": "A bejelentkezési ablak bezárult a hitelesítés befejezése előtt."
   },
   "setupErrorStateMismatch": {
-    "message": "OAuth state mismatch — aborted for safety."
+    "message": "OAuth-állapoteltérés — biztonsági okokból megszakítva."
   },
   "setupErrorOauthNoCode": {
-    "message": "Authorization was not granted."
+    "message": "Az engedély nem lett megadva."
   },
   "setupLabelDrive": {
-    "message": "Drive"
+    "message": "Meghajtó"
   },
   "setupBtnSignIn": {
-    "message": "Sign in with Microsoft"
+    "message": "Bejelentkezés Microsofttal"
   },
   "setupBtnConnect": {
-    "message": "Connect"
+    "message": "Csatlakozás"
   },
   "setupBtnCancel": {
-    "message": "Cancel"
+    "message": "Mégse"
   },
   "setupStatusAuthenticating": {
-    "message": "Signing in to Microsoft…"
+    "message": "Bejelentkezés a Microsofthoz…"
   },
   "setupStatusLoadingDrives": {
-    "message": "Loading drives…"
+    "message": "Meghajtók betöltése…"
   },
   "setupStatusSaving": {
-    "message": "Saving connection…"
+    "message": "Kapcsolat mentése…"
   },
   "setupErrorNoDrives": {
-    "message": "No drives available for this account."
+    "message": "Ehhez a fiókhoz nem érhető el meghajtó."
   },
   "setupErrorNotReady": {
-    "message": "Please complete sign-in and pick a drive first."
+    "message": "Előbb jelentkezzen be és válasszon meghajtót."
   },
   "setupReuseLabel": {
-    "message": "Use an existing account"
+    "message": "Meglévő fiók használata"
   },
   "setupReuseNew": {
-    "message": "- Create new account -"
+    "message": "- Új fiók létrehozása -"
   },
 
   "driveKindOwn": {
-    "message": "Own"
+    "message": "Saját"
   },
   "driveKindShared": {
-    "message": "Shared with me"
+    "message": "Velem megosztva"
   },
   "driveOwnLabel": {
-    "message": "My OneDrive"
+    "message": "Saját OneDrive"
   },
   "driveSharedFallback": {
-    "message": "Shared item"
+    "message": "Megosztott elem"
   },
 
   "configTitle": {
-    "message": "OneDrive Settings"
+    "message": "OneDrive beállítások"
   },
   "configSectionConnection": {
-    "message": "Connection"
+    "message": "Kapcsolat"
   },
   "configSectionAccount": {
-    "message": "Account"
+    "message": "Fiók"
   },
   "configBtnManageAccounts": {
-    "message": "Manage accounts"
+    "message": "Fiókok kezelése"
   },
   "configLabelConnName": {
-    "message": "Connection name"
+    "message": "Kapcsolat neve"
   },
   "configHintConnName": {
-    "message": "Label shown in the storage picker."
+    "message": "A tárhelyválasztóban megjelenő felirat."
   },
   "configLabelPollInterval": {
-    "message": "Change-detection interval (seconds, minimum 60)"
+    "message": "Változásérzékelési időköz (másodpercek, minimum 60)"
   },
   "configHintPollInterval": {
-    "message": "How often to check OneDrive for external changes. Set to 0 to disable. Minimum is 60 seconds (the browser's alarm floor)."
+    "message": "Milyen gyakran ellenőrizze a OneDrive külső változásait. 0 érték esetén letiltva. A minimum 60 másodperc (a böngésző ébresztési ütemezőjének alsó korlátja)."
   },
   "configLabelUpn": {
-    "message": "User principal name"
+    "message": "Felhasználó fő neve"
   },
   "configLabelDrive": {
-    "message": "Drive"
+    "message": "Meghajtó"
   },
   "configBtnSave": {
-    "message": "Save"
+    "message": "Mentés"
   },
   "configStatusSaveFailed": {
-    "message": "Failed to save settings."
+    "message": "A beállítások mentése sikertelen."
   },
   "configStatusSaved": {
-    "message": "Settings saved."
+    "message": "Beállítások mentve."
   },
 
   "errorUnknownConnection": {
-    "message": "Unknown or unauthorized connection."
+    "message": "Ismeretlen vagy jogosulatlan kapcsolat."
   },
   "errorAuth": {
-    "message": "Sign-in failed or expired. Please reconnect in the provider Options page."
+    "message": "A bejelentkezés sikertelen vagy lejárt. Csatlakozzon újra a szolgáltató beállítások oldalán."
   },
   "errorFileExists": {
-    "message": "A file or folder with that name already exists."
+    "message": "Már létezik ilyen nevű fájl vagy mappa."
   },
   "errorFolderExists": {
-    "message": "A folder with that name already exists."
+    "message": "Már létezik ilyen nevű mappa."
   },
   "errorHttp": {
     "message": "OneDrive HTTP $STATUS$",
     "placeholders": { "status": { "content": "$1" } }
   },
   "errorHttpTitle": {
-    "message": "OneDrive error ($STATUS$)",
+    "message": "OneDrive hiba ($STATUS$)",
     "placeholders": { "status": { "content": "$1" } }
   },
   "errorHttpDescription": {
-    "message": "Microsoft Graph returned an unexpected HTTP $STATUS$ response.",
+    "message": "A Microsoft Graph váratlan HTTP $STATUS$ választ adott.",
     "placeholders": { "status": { "content": "$1" } }
   },
   "errorLockedTitle": {
-    "message": "Item is locked"
+    "message": "Az elem zárolva van"
   },
   "errorLockedDescription": {
-    "message": "OneDrive reports the item is currently locked by another user or process."
+    "message": "A OneDrive jelzi, hogy az elem jelenleg egy másik felhasználó vagy folyamat zárolja."
   },
   "errorRateLimitedTitle": {
-    "message": "Rate limited"
+    "message": "Kéréskorlát elérve"
   },
   "errorRateLimitedDescription": {
-    "message": "OneDrive is throttling requests. Try again in a few moments."
+    "message": "A OneDrive korlátozza a kéréseket. Próbálja újra néhány pillanat múlva."
   },
   "errorQuotaExceededTitle": {
-    "message": "Quota exceeded"
+    "message": "Kvóta túllépve"
   },
   "errorQuotaExceededDescription": {
-    "message": "The OneDrive account has no storage space left."
+    "message": "A OneDrive-fiókban nincs több szabad tárhely."
   },
 
   "optionsPageTitle": {
-    "message": "OneDrive Accounts & Connections"
+    "message": "OneDrive fiókok és kapcsolatok"
   },
   "optionsPageSubtitle": {
-    "message": "Manage Microsoft accounts and the add-on connections that use them."
+    "message": "A Microsoft-fiókok és az azokat használó kiegészítő-kapcsolatok kezelése."
   },
   "optionsAccountsHeading": {
-    "message": "Accounts"
+    "message": "Fiókok"
   },
   "optionsThAccount": {
-    "message": "Account"
+    "message": "Fiók"
   },
   "optionsAccountsEmpty": {
-    "message": "No accounts."
+    "message": "Nincs fiók."
   },
   "optionsBtnAddAccount": {
-    "message": "Add Account"
+    "message": "Fiók hozzáadása"
   },
   "optionsAddAccountTitle": {
-    "message": "Add OneDrive Account"
+    "message": "OneDrive-fiók hozzáadása"
   },
   "optionsBtnSignInAndAdd": {
-    "message": "Sign in and add"
+    "message": "Bejelentkezés és hozzáadás"
   },
   "optionsBtnSaveAccount": {
-    "message": "Save"
+    "message": "Mentés"
   },
   "optionsBtnEdit": {
-    "message": "Edit"
+    "message": "Szerkesztés"
   },
   "optionsEditAccountTitle": {
-    "message": "Edit OneDrive Account"
+    "message": "OneDrive-fiók szerkesztése"
   },
   "optionsLabelAccountName": {
-    "message": "Account name"
+    "message": "Fiók neve"
   },
   "optionsPlaceholderAccountName": {
-    "message": "My OneDrive"
+    "message": "Saját OneDrive"
   },
   "optionsAccountNotice": {
-    "message": "Accounts can be pre-created here or added by an add-on during its setup flow. Add-ons can reuse any existing account when connecting, including mounting additional drives. Removing an account deletes its stored credentials and revokes access for all connections that use it."
+    "message": "A fiókokat itt előre létre lehet hozni, vagy egy kiegészítő adhatja hozzá telepítés közben. A kiegészítők csatlakozáskor bármelyik meglévő fiókot újrahasznosíthatják. Egy fiók eltávolítása törli a tárolt hitelesítő adatokat, és visszavonja a hozzáférést minden olyan kapcsolattól, amely azt használja."
   },
   "optionsGrantedHeading": {
-    "message": "Active Connections"
+    "message": "Aktív kapcsolatok"
   },
   "optionsThConnection": {
-    "message": "Connection"
+    "message": "Kapcsolat"
   },
   "optionsEmptyState": {
-    "message": "No active connections."
+    "message": "Nincsenek aktív kapcsolatok."
   },
   "optionsNotice": {
-    "message": "Revoking a connection removes the add-on's access to the associated drive. The underlying account remains signed in."
+    "message": "Egy kapcsolat visszavonása eltávolítja a kiegészítő hozzáférését a társított meghajtóhoz. A mögöttes fiók bejelentkezve marad."
   },
   "optionsErrorAccountExists": {
-    "message": "An account for this Microsoft user already exists."
+    "message": "Ehhez a Microsoft-felhasználóhoz már létezik fiók."
   },
   "optionsConnAccount": {
-    "message": "Account:"
+    "message": "Fiók:"
   },
   "optionsConnDrive": {
-    "message": "Drive:"
+    "message": "Meghajtó:"
   },
   "optionsConnExtension": {
-    "message": "Add-on:"
+    "message": "Kiegészítő:"
   },
   "btnDelete": {
-    "message": "Delete"
+    "message": "Törlés"
   },
   "btnRevoke": {
-    "message": "Revoke"
+    "message": "Visszavonás"
   }
 }

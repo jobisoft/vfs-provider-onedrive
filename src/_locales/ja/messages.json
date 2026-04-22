@@ -3,248 +3,248 @@
     "message": "VFS-Provider: OneDrive"
   },
   "extensionDescription": {
-    "message": "Microsoft OneDrive storage provider for the VFS Toolkit."
+    "message": "VFS Toolkit 用の Microsoft OneDrive ストレージプロバイダー。"
   },
 
   "setupTitle": {
-    "message": "Connect to OneDrive"
+    "message": "OneDrive に接続"
   },
   "setupSubtitleDefaultAddon": {
-    "message": "An add-on"
+    "message": "アドオン"
   },
   "setupSubtitleSuffix": {
-    "message": " wants to connect to a OneDrive account."
+    "message": " が OneDrive アカウントへの接続を要求しています。"
   },
   "setupLabelConnName": {
-    "message": "Connection name"
+    "message": "接続名"
   },
   "setupLabelClientId": {
-    "message": "Azure application (client) ID"
+    "message": "Azure アプリケーション ID (クライアント ID)"
   },
   "setupPlaceholderClientId": {
     "message": "00000000-0000-0000-0000-000000000000"
   },
   "setupAdvancedSummary": {
-    "message": "Use a custom Azure app (advanced)"
+    "message": "カスタム Azure アプリを使用する (詳細)"
   },
   "setupHintClientId": {
-    "message": "Leave empty to use the bundled default Azure app. Provide your own only if you've registered a separate app."
+    "message": "既定の同梱 Azure アプリを使用する場合は空のままにします。独自のアプリを登録した場合のみ入力してください。"
   },
   "setupHintClientIdAdvanced": {
-    "message": "Required Azure app settings: Mobile and desktop applications platform with the https://login.microsoftonline.com/common/oauth2/nativeclient redirect URI, Allow public client flows = Yes, and delegated Microsoft Graph permissions Files.ReadWrite.All + User.Read + offline_access."
+    "message": "必要な Azure アプリ設定: 「Mobile and desktop applications」プラットフォームに、リダイレクト URI https://login.microsoftonline.com/common/oauth2/nativeclient を設定し、「Allow public client flows」= はい、Microsoft Graph の委任済みアクセス許可 Files.ReadWrite.All + User.Read + offline_access。"
   },
   "setupStatusSigningIn": {
-    "message": "Signing in via popup window…"
+    "message": "ポップアップウィンドウでサインイン中…"
   },
   "setupErrorPopupClosed": {
-    "message": "The sign-in window was closed before authentication completed."
+    "message": "認証が完了する前にサインインウィンドウが閉じられました。"
   },
   "setupErrorStateMismatch": {
-    "message": "OAuth state mismatch — aborted for safety."
+    "message": "OAuth state の不一致 — 安全のため中止しました。"
   },
   "setupErrorOauthNoCode": {
-    "message": "Authorization was not granted."
+    "message": "認可が付与されませんでした。"
   },
   "setupLabelDrive": {
-    "message": "Drive"
+    "message": "ドライブ"
   },
   "setupBtnSignIn": {
-    "message": "Sign in with Microsoft"
+    "message": "Microsoft でサインイン"
   },
   "setupBtnConnect": {
-    "message": "Connect"
+    "message": "接続"
   },
   "setupBtnCancel": {
-    "message": "Cancel"
+    "message": "キャンセル"
   },
   "setupStatusAuthenticating": {
-    "message": "Signing in to Microsoft…"
+    "message": "Microsoft にサインイン中…"
   },
   "setupStatusLoadingDrives": {
-    "message": "Loading drives…"
+    "message": "ドライブを読み込み中…"
   },
   "setupStatusSaving": {
-    "message": "Saving connection…"
+    "message": "接続を保存中…"
   },
   "setupErrorNoDrives": {
-    "message": "No drives available for this account."
+    "message": "このアカウントで利用可能なドライブはありません。"
   },
   "setupErrorNotReady": {
-    "message": "Please complete sign-in and pick a drive first."
+    "message": "先にサインインしてドライブを選択してください。"
   },
   "setupReuseLabel": {
-    "message": "Use an existing account"
+    "message": "既存のアカウントを使用"
   },
   "setupReuseNew": {
-    "message": "- Create new account -"
+    "message": "- 新しいアカウントを作成 -"
   },
 
   "driveKindOwn": {
-    "message": "Own"
+    "message": "自分の"
   },
   "driveKindShared": {
-    "message": "Shared with me"
+    "message": "共有されている"
   },
   "driveOwnLabel": {
-    "message": "My OneDrive"
+    "message": "マイ OneDrive"
   },
   "driveSharedFallback": {
-    "message": "Shared item"
+    "message": "共有アイテム"
   },
 
   "configTitle": {
-    "message": "OneDrive Settings"
+    "message": "OneDrive 設定"
   },
   "configSectionConnection": {
-    "message": "Connection"
+    "message": "接続"
   },
   "configSectionAccount": {
-    "message": "Account"
+    "message": "アカウント"
   },
   "configBtnManageAccounts": {
-    "message": "Manage accounts"
+    "message": "アカウントを管理"
   },
   "configLabelConnName": {
-    "message": "Connection name"
+    "message": "接続名"
   },
   "configHintConnName": {
-    "message": "Label shown in the storage picker."
+    "message": "ストレージピッカーに表示されるラベル。"
   },
   "configLabelPollInterval": {
-    "message": "Change-detection interval (seconds, minimum 60)"
+    "message": "変更検出間隔 (秒、最小 60)"
   },
   "configHintPollInterval": {
-    "message": "How often to check OneDrive for external changes. Set to 0 to disable. Minimum is 60 seconds (the browser's alarm floor)."
+    "message": "OneDrive の外部変更を確認する頻度。0 に設定すると無効になります。最小は 60 秒 (ブラウザのアラームスケジューラの下限)。"
   },
   "configLabelUpn": {
-    "message": "User principal name"
+    "message": "ユーザープリンシパル名"
   },
   "configLabelDrive": {
-    "message": "Drive"
+    "message": "ドライブ"
   },
   "configBtnSave": {
-    "message": "Save"
+    "message": "保存"
   },
   "configStatusSaveFailed": {
-    "message": "Failed to save settings."
+    "message": "設定の保存に失敗しました。"
   },
   "configStatusSaved": {
-    "message": "Settings saved."
+    "message": "設定を保存しました。"
   },
 
   "errorUnknownConnection": {
-    "message": "Unknown or unauthorized connection."
+    "message": "不明または未認可の接続です。"
   },
   "errorAuth": {
-    "message": "Sign-in failed or expired. Please reconnect in the provider Options page."
+    "message": "サインインに失敗したか期限切れです。プロバイダーのオプションページから再接続してください。"
   },
   "errorFileExists": {
-    "message": "A file or folder with that name already exists."
+    "message": "同名のファイルまたはフォルダーが既に存在します。"
   },
   "errorFolderExists": {
-    "message": "A folder with that name already exists."
+    "message": "同名のフォルダーが既に存在します。"
   },
   "errorHttp": {
     "message": "OneDrive HTTP $STATUS$",
     "placeholders": { "status": { "content": "$1" } }
   },
   "errorHttpTitle": {
-    "message": "OneDrive error ($STATUS$)",
+    "message": "OneDrive エラー ($STATUS$)",
     "placeholders": { "status": { "content": "$1" } }
   },
   "errorHttpDescription": {
-    "message": "Microsoft Graph returned an unexpected HTTP $STATUS$ response.",
+    "message": "Microsoft Graph が予期しない HTTP $STATUS$ を返しました。",
     "placeholders": { "status": { "content": "$1" } }
   },
   "errorLockedTitle": {
-    "message": "Item is locked"
+    "message": "アイテムはロックされています"
   },
   "errorLockedDescription": {
-    "message": "OneDrive reports the item is currently locked by another user or process."
+    "message": "OneDrive によれば、このアイテムは現在他のユーザーまたはプロセスによってロックされています。"
   },
   "errorRateLimitedTitle": {
-    "message": "Rate limited"
+    "message": "レート制限に達しました"
   },
   "errorRateLimitedDescription": {
-    "message": "OneDrive is throttling requests. Try again in a few moments."
+    "message": "OneDrive はリクエストを制限しています。しばらく時間をおいて再度お試しください。"
   },
   "errorQuotaExceededTitle": {
-    "message": "Quota exceeded"
+    "message": "クォータ超過"
   },
   "errorQuotaExceededDescription": {
-    "message": "The OneDrive account has no storage space left."
+    "message": "OneDrive アカウントの空き容量がありません。"
   },
 
   "optionsPageTitle": {
-    "message": "OneDrive Accounts & Connections"
+    "message": "OneDrive アカウントと接続"
   },
   "optionsPageSubtitle": {
-    "message": "Manage Microsoft accounts and the add-on connections that use them."
+    "message": "Microsoft アカウントと、それを利用するアドオン接続を管理します。"
   },
   "optionsAccountsHeading": {
-    "message": "Accounts"
+    "message": "アカウント"
   },
   "optionsThAccount": {
-    "message": "Account"
+    "message": "アカウント"
   },
   "optionsAccountsEmpty": {
-    "message": "No accounts."
+    "message": "アカウントがありません。"
   },
   "optionsBtnAddAccount": {
-    "message": "Add Account"
+    "message": "アカウントを追加"
   },
   "optionsAddAccountTitle": {
-    "message": "Add OneDrive Account"
+    "message": "OneDrive アカウントを追加"
   },
   "optionsBtnSignInAndAdd": {
-    "message": "Sign in and add"
+    "message": "サインインして追加"
   },
   "optionsBtnSaveAccount": {
-    "message": "Save"
+    "message": "保存"
   },
   "optionsBtnEdit": {
-    "message": "Edit"
+    "message": "編集"
   },
   "optionsEditAccountTitle": {
-    "message": "Edit OneDrive Account"
+    "message": "OneDrive アカウントを編集"
   },
   "optionsLabelAccountName": {
-    "message": "Account name"
+    "message": "アカウント名"
   },
   "optionsPlaceholderAccountName": {
-    "message": "My OneDrive"
+    "message": "マイ OneDrive"
   },
   "optionsAccountNotice": {
-    "message": "Accounts can be pre-created here or added by an add-on during its setup flow. Add-ons can reuse any existing account when connecting, including mounting additional drives. Removing an account deletes its stored credentials and revokes access for all connections that use it."
+    "message": "アカウントはここで事前に作成するか、アドオンのセットアップ中に追加できます。アドオンは接続時に既存のアカウントを再利用できます。アカウントを削除すると、保存された資格情報が削除され、それを使用するすべての接続のアクセスが取り消されます。"
   },
   "optionsGrantedHeading": {
-    "message": "Active Connections"
+    "message": "有効な接続"
   },
   "optionsThConnection": {
-    "message": "Connection"
+    "message": "接続"
   },
   "optionsEmptyState": {
-    "message": "No active connections."
+    "message": "有効な接続はありません。"
   },
   "optionsNotice": {
-    "message": "Revoking a connection removes the add-on's access to the associated drive. The underlying account remains signed in."
+    "message": "接続を取り消すと、アドオンの関連ドライブへのアクセスが削除されます。基盤となるアカウントはサインインしたままです。"
   },
   "optionsErrorAccountExists": {
-    "message": "An account for this Microsoft user already exists."
+    "message": "この Microsoft ユーザーのアカウントは既に存在します。"
   },
   "optionsConnAccount": {
-    "message": "Account:"
+    "message": "アカウント:"
   },
   "optionsConnDrive": {
-    "message": "Drive:"
+    "message": "ドライブ:"
   },
   "optionsConnExtension": {
-    "message": "Add-on:"
+    "message": "アドオン:"
   },
   "btnDelete": {
-    "message": "Delete"
+    "message": "削除"
   },
   "btnRevoke": {
-    "message": "Revoke"
+    "message": "取り消し"
   }
 }

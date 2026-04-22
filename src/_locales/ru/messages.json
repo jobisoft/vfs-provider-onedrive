@@ -3,248 +3,248 @@
     "message": "VFS-Provider: OneDrive"
   },
   "extensionDescription": {
-    "message": "Microsoft OneDrive storage provider for the VFS Toolkit."
+    "message": "Провайдер хранилища Microsoft OneDrive для VFS Toolkit."
   },
 
   "setupTitle": {
-    "message": "Connect to OneDrive"
+    "message": "Подключение к OneDrive"
   },
   "setupSubtitleDefaultAddon": {
-    "message": "An add-on"
+    "message": "Дополнение"
   },
   "setupSubtitleSuffix": {
-    "message": " wants to connect to a OneDrive account."
+    "message": " хочет подключиться к учётной записи OneDrive."
   },
   "setupLabelConnName": {
-    "message": "Connection name"
+    "message": "Имя подключения"
   },
   "setupLabelClientId": {
-    "message": "Azure application (client) ID"
+    "message": "Идентификатор приложения Azure (client ID)"
   },
   "setupPlaceholderClientId": {
     "message": "00000000-0000-0000-0000-000000000000"
   },
   "setupAdvancedSummary": {
-    "message": "Use a custom Azure app (advanced)"
+    "message": "Использовать пользовательское приложение Azure (расширенно)"
   },
   "setupHintClientId": {
-    "message": "Leave empty to use the bundled default Azure app. Provide your own only if you've registered a separate app."
+    "message": "Оставьте пустым, чтобы использовать встроенное приложение Azure. Указывайте собственное только если вы зарегистрировали отдельное приложение."
   },
   "setupHintClientIdAdvanced": {
-    "message": "Required Azure app settings: Mobile and desktop applications platform with the https://login.microsoftonline.com/common/oauth2/nativeclient redirect URI, Allow public client flows = Yes, and delegated Microsoft Graph permissions Files.ReadWrite.All + User.Read + offline_access."
+    "message": "Требуемые настройки Azure: платформа «Mobile and desktop applications» с URI перенаправления https://login.microsoftonline.com/common/oauth2/nativeclient, «Allow public client flows» = Да и делегированные разрешения Microsoft Graph Files.ReadWrite.All + User.Read + offline_access."
   },
   "setupStatusSigningIn": {
-    "message": "Signing in via popup window…"
+    "message": "Вход через всплывающее окно…"
   },
   "setupErrorPopupClosed": {
-    "message": "The sign-in window was closed before authentication completed."
+    "message": "Окно входа было закрыто до завершения аутентификации."
   },
   "setupErrorStateMismatch": {
-    "message": "OAuth state mismatch — aborted for safety."
+    "message": "Несовпадение состояния OAuth — отменено в целях безопасности."
   },
   "setupErrorOauthNoCode": {
-    "message": "Authorization was not granted."
+    "message": "Разрешение не было предоставлено."
   },
   "setupLabelDrive": {
-    "message": "Drive"
+    "message": "Диск"
   },
   "setupBtnSignIn": {
-    "message": "Sign in with Microsoft"
+    "message": "Войти через Microsoft"
   },
   "setupBtnConnect": {
-    "message": "Connect"
+    "message": "Подключиться"
   },
   "setupBtnCancel": {
-    "message": "Cancel"
+    "message": "Отмена"
   },
   "setupStatusAuthenticating": {
-    "message": "Signing in to Microsoft…"
+    "message": "Вход в Microsoft…"
   },
   "setupStatusLoadingDrives": {
-    "message": "Loading drives…"
+    "message": "Загрузка дисков…"
   },
   "setupStatusSaving": {
-    "message": "Saving connection…"
+    "message": "Сохранение подключения…"
   },
   "setupErrorNoDrives": {
-    "message": "No drives available for this account."
+    "message": "Нет доступных дисков для этой учётной записи."
   },
   "setupErrorNotReady": {
-    "message": "Please complete sign-in and pick a drive first."
+    "message": "Сначала войдите и выберите диск."
   },
   "setupReuseLabel": {
-    "message": "Use an existing account"
+    "message": "Использовать существующую учётную запись"
   },
   "setupReuseNew": {
-    "message": "- Create new account -"
+    "message": "- Создать новую учётную запись -"
   },
 
   "driveKindOwn": {
-    "message": "Own"
+    "message": "Личный"
   },
   "driveKindShared": {
-    "message": "Shared with me"
+    "message": "Со мной поделились"
   },
   "driveOwnLabel": {
-    "message": "My OneDrive"
+    "message": "Мой OneDrive"
   },
   "driveSharedFallback": {
-    "message": "Shared item"
+    "message": "Общий элемент"
   },
 
   "configTitle": {
-    "message": "OneDrive Settings"
+    "message": "Настройки OneDrive"
   },
   "configSectionConnection": {
-    "message": "Connection"
+    "message": "Подключение"
   },
   "configSectionAccount": {
-    "message": "Account"
+    "message": "Учётная запись"
   },
   "configBtnManageAccounts": {
-    "message": "Manage accounts"
+    "message": "Управление учётными записями"
   },
   "configLabelConnName": {
-    "message": "Connection name"
+    "message": "Имя подключения"
   },
   "configHintConnName": {
-    "message": "Label shown in the storage picker."
+    "message": "Подпись, отображаемая в диалоге выбора хранилища."
   },
   "configLabelPollInterval": {
-    "message": "Change-detection interval (seconds, minimum 60)"
+    "message": "Интервал обнаружения изменений (секунды, минимум 60)"
   },
   "configHintPollInterval": {
-    "message": "How often to check OneDrive for external changes. Set to 0 to disable. Minimum is 60 seconds (the browser's alarm floor)."
+    "message": "Частота проверки внешних изменений в OneDrive. Установите 0 для отключения. Минимум — 60 секунд (нижняя граница планировщика напоминаний браузера)."
   },
   "configLabelUpn": {
-    "message": "User principal name"
+    "message": "Имя участника-пользователя"
   },
   "configLabelDrive": {
-    "message": "Drive"
+    "message": "Диск"
   },
   "configBtnSave": {
-    "message": "Save"
+    "message": "Сохранить"
   },
   "configStatusSaveFailed": {
-    "message": "Failed to save settings."
+    "message": "Не удалось сохранить настройки."
   },
   "configStatusSaved": {
-    "message": "Settings saved."
+    "message": "Настройки сохранены."
   },
 
   "errorUnknownConnection": {
-    "message": "Unknown or unauthorized connection."
+    "message": "Неизвестное или неавторизованное подключение."
   },
   "errorAuth": {
-    "message": "Sign-in failed or expired. Please reconnect in the provider Options page."
+    "message": "Вход не выполнен или истёк. Переподключитесь на странице настроек провайдера."
   },
   "errorFileExists": {
-    "message": "A file or folder with that name already exists."
+    "message": "Файл или папка с таким именем уже существует."
   },
   "errorFolderExists": {
-    "message": "A folder with that name already exists."
+    "message": "Папка с таким именем уже существует."
   },
   "errorHttp": {
     "message": "OneDrive HTTP $STATUS$",
     "placeholders": { "status": { "content": "$1" } }
   },
   "errorHttpTitle": {
-    "message": "OneDrive error ($STATUS$)",
+    "message": "Ошибка OneDrive ($STATUS$)",
     "placeholders": { "status": { "content": "$1" } }
   },
   "errorHttpDescription": {
-    "message": "Microsoft Graph returned an unexpected HTTP $STATUS$ response.",
+    "message": "Microsoft Graph вернул неожиданный ответ HTTP $STATUS$.",
     "placeholders": { "status": { "content": "$1" } }
   },
   "errorLockedTitle": {
-    "message": "Item is locked"
+    "message": "Элемент заблокирован"
   },
   "errorLockedDescription": {
-    "message": "OneDrive reports the item is currently locked by another user or process."
+    "message": "OneDrive сообщает, что элемент в данный момент заблокирован другим пользователем или процессом."
   },
   "errorRateLimitedTitle": {
-    "message": "Rate limited"
+    "message": "Превышен лимит запросов"
   },
   "errorRateLimitedDescription": {
-    "message": "OneDrive is throttling requests. Try again in a few moments."
+    "message": "OneDrive ограничивает количество запросов. Повторите попытку через несколько мгновений."
   },
   "errorQuotaExceededTitle": {
-    "message": "Quota exceeded"
+    "message": "Превышена квота"
   },
   "errorQuotaExceededDescription": {
-    "message": "The OneDrive account has no storage space left."
+    "message": "В учётной записи OneDrive не осталось свободного места."
   },
 
   "optionsPageTitle": {
-    "message": "OneDrive Accounts & Connections"
+    "message": "Учётные записи и подключения OneDrive"
   },
   "optionsPageSubtitle": {
-    "message": "Manage Microsoft accounts and the add-on connections that use them."
+    "message": "Управление учётными записями Microsoft и подключениями дополнений, которые их используют."
   },
   "optionsAccountsHeading": {
-    "message": "Accounts"
+    "message": "Учётные записи"
   },
   "optionsThAccount": {
-    "message": "Account"
+    "message": "Учётная запись"
   },
   "optionsAccountsEmpty": {
-    "message": "No accounts."
+    "message": "Нет учётных записей."
   },
   "optionsBtnAddAccount": {
-    "message": "Add Account"
+    "message": "Добавить учётную запись"
   },
   "optionsAddAccountTitle": {
-    "message": "Add OneDrive Account"
+    "message": "Добавление учётной записи OneDrive"
   },
   "optionsBtnSignInAndAdd": {
-    "message": "Sign in and add"
+    "message": "Войти и добавить"
   },
   "optionsBtnSaveAccount": {
-    "message": "Save"
+    "message": "Сохранить"
   },
   "optionsBtnEdit": {
-    "message": "Edit"
+    "message": "Изменить"
   },
   "optionsEditAccountTitle": {
-    "message": "Edit OneDrive Account"
+    "message": "Изменение учётной записи OneDrive"
   },
   "optionsLabelAccountName": {
-    "message": "Account name"
+    "message": "Имя учётной записи"
   },
   "optionsPlaceholderAccountName": {
-    "message": "My OneDrive"
+    "message": "Мой OneDrive"
   },
   "optionsAccountNotice": {
-    "message": "Accounts can be pre-created here or added by an add-on during its setup flow. Add-ons can reuse any existing account when connecting, including mounting additional drives. Removing an account deletes its stored credentials and revokes access for all connections that use it."
+    "message": "Учётные записи можно создать здесь заранее или добавить из дополнения во время его установки. При подключении дополнения могут повторно использовать любую существующую учётную запись. Удаление учётной записи стирает сохранённые учётные данные и отзывает доступ у всех подключений, которые её используют."
   },
   "optionsGrantedHeading": {
-    "message": "Active Connections"
+    "message": "Активные подключения"
   },
   "optionsThConnection": {
-    "message": "Connection"
+    "message": "Подключение"
   },
   "optionsEmptyState": {
-    "message": "No active connections."
+    "message": "Нет активных подключений."
   },
   "optionsNotice": {
-    "message": "Revoking a connection removes the add-on's access to the associated drive. The underlying account remains signed in."
+    "message": "Отзыв подключения удаляет доступ дополнения к связанному диску. Базовая учётная запись остаётся активной."
   },
   "optionsErrorAccountExists": {
-    "message": "An account for this Microsoft user already exists."
+    "message": "Учётная запись для этого пользователя Microsoft уже существует."
   },
   "optionsConnAccount": {
-    "message": "Account:"
+    "message": "Учётная запись:"
   },
   "optionsConnDrive": {
-    "message": "Drive:"
+    "message": "Диск:"
   },
   "optionsConnExtension": {
-    "message": "Add-on:"
+    "message": "Дополнение:"
   },
   "btnDelete": {
-    "message": "Delete"
+    "message": "Удалить"
   },
   "btnRevoke": {
-    "message": "Revoke"
+    "message": "Отозвать"
   }
 }

@@ -3,248 +3,248 @@
     "message": "VFS-Provider: OneDrive"
   },
   "extensionDescription": {
-    "message": "Microsoft OneDrive storage provider for the VFS Toolkit."
+    "message": "Poskytovatel úložiště Microsoft OneDrive pro VFS Toolkit."
   },
 
   "setupTitle": {
-    "message": "Connect to OneDrive"
+    "message": "Připojit k OneDrive"
   },
   "setupSubtitleDefaultAddon": {
-    "message": "An add-on"
+    "message": "Doplněk"
   },
   "setupSubtitleSuffix": {
-    "message": " wants to connect to a OneDrive account."
+    "message": " se chce připojit k účtu OneDrive."
   },
   "setupLabelConnName": {
-    "message": "Connection name"
+    "message": "Název připojení"
   },
   "setupLabelClientId": {
-    "message": "Azure application (client) ID"
+    "message": "ID aplikace Azure (client ID)"
   },
   "setupPlaceholderClientId": {
     "message": "00000000-0000-0000-0000-000000000000"
   },
   "setupAdvancedSummary": {
-    "message": "Use a custom Azure app (advanced)"
+    "message": "Použít vlastní aplikaci Azure (pokročilé)"
   },
   "setupHintClientId": {
-    "message": "Leave empty to use the bundled default Azure app. Provide your own only if you've registered a separate app."
+    "message": "Ponechte prázdné pro použití přibalené výchozí aplikace Azure. Vyplňte pouze v případě, že jste zaregistrovali vlastní aplikaci."
   },
   "setupHintClientIdAdvanced": {
-    "message": "Required Azure app settings: Mobile and desktop applications platform with the https://login.microsoftonline.com/common/oauth2/nativeclient redirect URI, Allow public client flows = Yes, and delegated Microsoft Graph permissions Files.ReadWrite.All + User.Read + offline_access."
+    "message": "Požadované nastavení aplikace Azure: platforma „Mobile and desktop applications\" s URI přesměrování https://login.microsoftonline.com/common/oauth2/nativeclient, „Allow public client flows\" = Ano a delegovaná oprávnění Microsoft Graph Files.ReadWrite.All + User.Read + offline_access."
   },
   "setupStatusSigningIn": {
-    "message": "Signing in via popup window…"
+    "message": "Přihlašování přes vyskakovací okno…"
   },
   "setupErrorPopupClosed": {
-    "message": "The sign-in window was closed before authentication completed."
+    "message": "Přihlašovací okno bylo zavřeno před dokončením ověření."
   },
   "setupErrorStateMismatch": {
-    "message": "OAuth state mismatch — aborted for safety."
+    "message": "Nesoulad stavu OAuth — z bezpečnostních důvodů zrušeno."
   },
   "setupErrorOauthNoCode": {
-    "message": "Authorization was not granted."
+    "message": "Oprávnění nebylo uděleno."
   },
   "setupLabelDrive": {
-    "message": "Drive"
+    "message": "Disk"
   },
   "setupBtnSignIn": {
-    "message": "Sign in with Microsoft"
+    "message": "Přihlásit se přes Microsoft"
   },
   "setupBtnConnect": {
-    "message": "Connect"
+    "message": "Připojit"
   },
   "setupBtnCancel": {
-    "message": "Cancel"
+    "message": "Zrušit"
   },
   "setupStatusAuthenticating": {
-    "message": "Signing in to Microsoft…"
+    "message": "Přihlašování k Microsoftu…"
   },
   "setupStatusLoadingDrives": {
-    "message": "Loading drives…"
+    "message": "Načítání disků…"
   },
   "setupStatusSaving": {
-    "message": "Saving connection…"
+    "message": "Ukládání připojení…"
   },
   "setupErrorNoDrives": {
-    "message": "No drives available for this account."
+    "message": "Pro tento účet nejsou k dispozici žádné disky."
   },
   "setupErrorNotReady": {
-    "message": "Please complete sign-in and pick a drive first."
+    "message": "Nejprve se přihlaste a vyberte disk."
   },
   "setupReuseLabel": {
-    "message": "Use an existing account"
+    "message": "Použít existující účet"
   },
   "setupReuseNew": {
-    "message": "- Create new account -"
+    "message": "- Vytvořit nový účet -"
   },
 
   "driveKindOwn": {
-    "message": "Own"
+    "message": "Vlastní"
   },
   "driveKindShared": {
-    "message": "Shared with me"
+    "message": "Sdíleno se mnou"
   },
   "driveOwnLabel": {
-    "message": "My OneDrive"
+    "message": "Můj OneDrive"
   },
   "driveSharedFallback": {
-    "message": "Shared item"
+    "message": "Sdílená položka"
   },
 
   "configTitle": {
-    "message": "OneDrive Settings"
+    "message": "Nastavení OneDrive"
   },
   "configSectionConnection": {
-    "message": "Connection"
+    "message": "Připojení"
   },
   "configSectionAccount": {
-    "message": "Account"
+    "message": "Účet"
   },
   "configBtnManageAccounts": {
-    "message": "Manage accounts"
+    "message": "Spravovat účty"
   },
   "configLabelConnName": {
-    "message": "Connection name"
+    "message": "Název připojení"
   },
   "configHintConnName": {
-    "message": "Label shown in the storage picker."
+    "message": "Popisek zobrazený v dialogu výběru úložiště."
   },
   "configLabelPollInterval": {
-    "message": "Change-detection interval (seconds, minimum 60)"
+    "message": "Interval detekce změn (sekundy, minimálně 60)"
   },
   "configHintPollInterval": {
-    "message": "How often to check OneDrive for external changes. Set to 0 to disable. Minimum is 60 seconds (the browser's alarm floor)."
+    "message": "Jak často kontrolovat externí změny na OneDrive. Nastavte 0 pro vypnutí. Minimum je 60 sekund (spodní hranice plánovače alarmů prohlížeče)."
   },
   "configLabelUpn": {
-    "message": "User principal name"
+    "message": "Hlavní název uživatele"
   },
   "configLabelDrive": {
-    "message": "Drive"
+    "message": "Disk"
   },
   "configBtnSave": {
-    "message": "Save"
+    "message": "Uložit"
   },
   "configStatusSaveFailed": {
-    "message": "Failed to save settings."
+    "message": "Nepodařilo se uložit nastavení."
   },
   "configStatusSaved": {
-    "message": "Settings saved."
+    "message": "Nastavení uloženo."
   },
 
   "errorUnknownConnection": {
-    "message": "Unknown or unauthorized connection."
+    "message": "Neznámé nebo neautorizované připojení."
   },
   "errorAuth": {
-    "message": "Sign-in failed or expired. Please reconnect in the provider Options page."
+    "message": "Přihlášení selhalo nebo vypršelo. Připojte se znovu na stránce možností poskytovatele."
   },
   "errorFileExists": {
-    "message": "A file or folder with that name already exists."
+    "message": "Soubor nebo složka se stejným názvem již existuje."
   },
   "errorFolderExists": {
-    "message": "A folder with that name already exists."
+    "message": "Složka se stejným názvem již existuje."
   },
   "errorHttp": {
     "message": "OneDrive HTTP $STATUS$",
     "placeholders": { "status": { "content": "$1" } }
   },
   "errorHttpTitle": {
-    "message": "OneDrive error ($STATUS$)",
+    "message": "Chyba OneDrive ($STATUS$)",
     "placeholders": { "status": { "content": "$1" } }
   },
   "errorHttpDescription": {
-    "message": "Microsoft Graph returned an unexpected HTTP $STATUS$ response.",
+    "message": "Microsoft Graph vrátil neočekávanou odpověď HTTP $STATUS$.",
     "placeholders": { "status": { "content": "$1" } }
   },
   "errorLockedTitle": {
-    "message": "Item is locked"
+    "message": "Položka je uzamčena"
   },
   "errorLockedDescription": {
-    "message": "OneDrive reports the item is currently locked by another user or process."
+    "message": "OneDrive hlásí, že položka je aktuálně uzamčena jiným uživatelem nebo procesem."
   },
   "errorRateLimitedTitle": {
-    "message": "Rate limited"
+    "message": "Překročen limit požadavků"
   },
   "errorRateLimitedDescription": {
-    "message": "OneDrive is throttling requests. Try again in a few moments."
+    "message": "OneDrive omezuje požadavky. Zkuste to znovu za chvíli."
   },
   "errorQuotaExceededTitle": {
-    "message": "Quota exceeded"
+    "message": "Překročena kvóta"
   },
   "errorQuotaExceededDescription": {
-    "message": "The OneDrive account has no storage space left."
+    "message": "Účet OneDrive již nemá volné úložiště."
   },
 
   "optionsPageTitle": {
-    "message": "OneDrive Accounts & Connections"
+    "message": "Účty a připojení OneDrive"
   },
   "optionsPageSubtitle": {
-    "message": "Manage Microsoft accounts and the add-on connections that use them."
+    "message": "Spravujte účty Microsoft a připojení doplňků, která je používají."
   },
   "optionsAccountsHeading": {
-    "message": "Accounts"
+    "message": "Účty"
   },
   "optionsThAccount": {
-    "message": "Account"
+    "message": "Účet"
   },
   "optionsAccountsEmpty": {
-    "message": "No accounts."
+    "message": "Žádné účty."
   },
   "optionsBtnAddAccount": {
-    "message": "Add Account"
+    "message": "Přidat účet"
   },
   "optionsAddAccountTitle": {
-    "message": "Add OneDrive Account"
+    "message": "Přidat účet OneDrive"
   },
   "optionsBtnSignInAndAdd": {
-    "message": "Sign in and add"
+    "message": "Přihlásit se a přidat"
   },
   "optionsBtnSaveAccount": {
-    "message": "Save"
+    "message": "Uložit"
   },
   "optionsBtnEdit": {
-    "message": "Edit"
+    "message": "Upravit"
   },
   "optionsEditAccountTitle": {
-    "message": "Edit OneDrive Account"
+    "message": "Upravit účet OneDrive"
   },
   "optionsLabelAccountName": {
-    "message": "Account name"
+    "message": "Název účtu"
   },
   "optionsPlaceholderAccountName": {
-    "message": "My OneDrive"
+    "message": "Můj OneDrive"
   },
   "optionsAccountNotice": {
-    "message": "Accounts can be pre-created here or added by an add-on during its setup flow. Add-ons can reuse any existing account when connecting, including mounting additional drives. Removing an account deletes its stored credentials and revokes access for all connections that use it."
+    "message": "Účty lze předem vytvořit zde nebo je může přidat doplněk během své instalace. Doplňky mohou při připojování opakovaně použít kterýkoliv existující účet. Odebrání účtu smaže uložené přihlašovací údaje a odvolá přístup všem připojením, která jej používají."
   },
   "optionsGrantedHeading": {
-    "message": "Active Connections"
+    "message": "Aktivní připojení"
   },
   "optionsThConnection": {
-    "message": "Connection"
+    "message": "Připojení"
   },
   "optionsEmptyState": {
-    "message": "No active connections."
+    "message": "Žádná aktivní připojení."
   },
   "optionsNotice": {
-    "message": "Revoking a connection removes the add-on's access to the associated drive. The underlying account remains signed in."
+    "message": "Odvolání připojení odebere doplňku přístup k příslušnému disku. Základní účet zůstane přihlášený."
   },
   "optionsErrorAccountExists": {
-    "message": "An account for this Microsoft user already exists."
+    "message": "Účet pro tohoto uživatele Microsoft již existuje."
   },
   "optionsConnAccount": {
-    "message": "Account:"
+    "message": "Účet:"
   },
   "optionsConnDrive": {
-    "message": "Drive:"
+    "message": "Disk:"
   },
   "optionsConnExtension": {
-    "message": "Add-on:"
+    "message": "Doplněk:"
   },
   "btnDelete": {
-    "message": "Delete"
+    "message": "Odstranit"
   },
   "btnRevoke": {
-    "message": "Revoke"
+    "message": "Odvolat"
   }
 }
