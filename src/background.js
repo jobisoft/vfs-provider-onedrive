@@ -26,11 +26,12 @@ import {
 import { refreshAccessToken, resolveClientId } from './onedrive-auth.mjs';
 import { pollDelta, primeDelta } from './onedrive-delta.mjs';
 
-const ALARM_PREFIX       = 'onedrive-poll-';
-const POLL_MIN_SEC       = 60;                 // alarms have 1-minute minimum
-const SIMPLE_UPLOAD_MAX  = 4 * 1024 * 1024;    // 4 MiB
-const UPLOAD_CHUNK_SIZE  = 5 * 1024 * 1024;    // multiple of 327_680 per Graph
-const COPY_POLL_INTERVAL = 1000;               // ms between copy-monitor polls
+const ALARM_PREFIX           = 'onedrive-poll-';
+const POLL_MIN_SEC           = 60;                 // alarms have 1-minute minimum
+const SIMPLE_UPLOAD_MAX      = 50 * 1024 * 1024;   // Graph allows up to 250 MiB for simple PUT; 50 MiB is a safe sweet spot.
+const UPLOAD_CHUNK_SIZE      = 5 * 1024 * 1024;    // multiple of 327_680 per Graph
+const COPY_POLL_INITIAL_MS   = 250;                // wait before the *first* monitor poll
+const COPY_POLL_MAX_MS       = 750;                // cap for exponential backoff between polls
 
 function _chunks(arr, size) {
   const out = [];
@@ -43,6 +44,14 @@ function _err(code, message, details) {
   e.code = code;
   if (details) e.details = details;
   return e;
+}
+
+// True when an error thrown by the upload / create path indicates the parent
+// directory chain doesn't exist — caller should run mkdirpParent and retry.
+// Graph returns 404 `itemNotFound`, mapped by throwGraphError to E:PROVIDER
+// with details.id = 'http-404'.
+function _isParentMissing(e) {
+  return e?.code === 'E:PROVIDER' && e?.details?.id === 'http-404';
 }
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -285,33 +294,43 @@ class OneDriveProvider extends VfsProviderImplementation {
   async onWriteFile(requestId, storageId, path, file, overwrite) {
     const { conn } = await this.#bundle(storageId);
     return this.#withRequest(requestId, async (signal) => {
-      await this.#mkdirpParent(conn, path, signal);
-
       const size = file.size ?? (await file.arrayBuffer()).byteLength;
-      const existedBefore = await this.#exists(conn, path, signal);
-      if (!overwrite && existedBefore) {
-        throw _err('E:EXIST', browser.i18n.getMessage('errorFileExists'));
+      const upload = () => size <= SIMPLE_UPLOAD_MAX
+        ? this.#uploadSmall(conn, path, file, overwrite, signal)
+        : this.#uploadLarge(conn, path, file, overwrite, signal, requestId);
+
+      // Optimistic: skip pre-flight mkdirp + exists. Graph's conflictBehavior
+      // handles the E:EXIST case (409 → throwGraphError → E:EXIST) and 404
+      // signals parent-missing, which we recover from by lazily running
+      // mkdirpParent + retrying the upload once.
+      let status;
+      try {
+        status = await upload();
+      } catch (e) {
+        if (!_isParentMissing(e)) throw e;
+        await this.#mkdirpParent(conn, path, signal);
+        status = await upload();
       }
 
-      if (size <= SIMPLE_UPLOAD_MAX) {
-        await this.#uploadSmall(conn, path, file, overwrite, signal);
-      } else {
-        await this.#uploadLarge(conn, path, file, overwrite, signal, requestId);
-      }
-
-      await this.#broadcastChanges(conn, [{
-        kind: 'file',
-        action: existedBefore ? 'modified' : 'created',
-        target: { path },
-      }]);
+      // 201 Created for new items, 200 OK for replace (same for upload-session
+      // final chunk). The distinction drives broadcast semantics for peers.
+      const action = status === 201 ? 'created' : 'modified';
+      await this.#broadcastChanges(conn, [{ kind: 'file', action, target: { path } }]);
     });
   }
 
   async onAddFolder(requestId, storageId, path) {
     const { conn } = await this.#bundle(storageId);
     return this.#withRequest(requestId, async (signal) => {
-      await this.#mkdirpParent(conn, path, signal);
-      await this.#createFolder(conn, path, /* mergeIfExists */ false, signal);
+      // Optimistic: try the create; if the parent chain is missing, lazily
+      // mkdirp it and retry once.
+      try {
+        await this.#createFolder(conn, path, /* mergeIfExists */ false, signal);
+      } catch (e) {
+        if (!_isParentMissing(e)) throw e;
+        await this.#mkdirpParent(conn, path, signal);
+        await this.#createFolder(conn, path, /* mergeIfExists */ false, signal);
+      }
       await this.#broadcastChanges(conn, [{ kind: 'directory', action: 'created', target: { path } }]);
     });
   }
@@ -357,30 +376,34 @@ class OneDriveProvider extends VfsProviderImplementation {
   async #moveOrCopy(requestId, storageId, oldPath, newPath, overwrite, { op, kind }) {
     const { conn } = await this.#bundle(storageId);
     return this.#withRequest(requestId, async (signal) => {
-      await this.#mkdirpParent(conn, newPath, signal);
+      // Personal OneDrive's /copy silently ignores `conflictBehavior` — it
+      // auto-renames on conflict regardless. We enforce overwrite semantics
+      // ourselves via an explicit pre-check + pre-delete. Move uses PATCH,
+      // which reliably fails on conflict, so only the pre-delete path matters
+      // when overwrite=true.
+      const needsPreCheck = op === 'copy' || (op === 'move' && overwrite);
 
-      // Personal OneDrive's /copy silently ignores `conflictBehavior` (either
-      // in body or query) — it auto-renames and reports success regardless.
-      // And `replace` doesn't actually replace; the original target keeps
-      // its content. So we enforce both semantics ourselves by resolving the
-      // target ID up front:
-      //   - overwrite=true  → pre-delete the target, then copy onto a clean slot.
-      //   - overwrite=false → throw E:EXIST immediately.
-      // Move uses PATCH whose default is reliably "fail on conflict", so only
-      // the pre-delete side matters for move.
-      if (op === 'copy' || (op === 'move' && overwrite)) {
-        const existingId = await this.#resolveItemId(conn, newPath, signal).catch(() => null);
-        if (existingId) {
-          if (op === 'copy' && !overwrite) {
-            throw _err('E:EXIST', browser.i18n.getMessage('errorFileExists'));
-          }
-          await graphFetch('DELETE',
-            `${GRAPH_BASE}/drives/${encodeURIComponent(conn.driveId)}/items/${encodeURIComponent(existingId)}`,
-            this.#callOpts(conn.accountId, signal));
+      // Phase 1: independent reads + dir-prep. mkdirp only ever 409s on
+      // existing ancestors (no side effects), and neither the src read nor the
+      // pre-existence check touch the destination tree mkdirp cares about.
+      const [, srcId, existingId] = await Promise.all([
+        this.#mkdirpParent(conn, newPath, signal),
+        this.#resolveItemId(conn, oldPath, signal),
+        needsPreCheck
+          ? this.#resolveItemId(conn, newPath, signal).catch(() => null)
+          : Promise.resolve(null),
+      ]);
+
+      if (existingId) {
+        if (op === 'copy' && !overwrite) {
+          throw _err('E:EXIST', browser.i18n.getMessage('errorFileExists'));
         }
+        await graphFetch('DELETE',
+          `${GRAPH_BASE}/drives/${encodeURIComponent(conn.driveId)}/items/${encodeURIComponent(existingId)}`,
+          this.#callOpts(conn.accountId, signal));
       }
 
-      const srcId = await this.#resolveItemId(conn, oldPath, signal);
+      // Phase 2: parent read depends on mkdirp having completed.
       const destParentId = await this.#resolveParentId(conn, newPath, signal);
       const newName = basenameOf(newPath);
 
@@ -617,12 +640,13 @@ class OneDriveProvider extends VfsProviderImplementation {
 
   async #uploadSmall(conn, path, file, overwrite, signal) {
     const conflict = overwrite ? 'replace' : 'fail';
-    await graphFetch('PUT',
+    const resp = await graphFetch('PUT',
       pathToGraphUrl(conn, path, `:/content?@microsoft.graph.conflictBehavior=${conflict}`),
       this.#callOpts(conn.accountId, signal, {
         headers: { 'Content-Type': file.type || 'application/octet-stream' },
         body:    file,
       }));
+    return resp.status;   // 201 Created (new), 200 OK (replace)
   }
 
   async #uploadLarge(conn, path, file, overwrite, signal, requestId) {
@@ -644,6 +668,7 @@ class OneDriveProvider extends VfsProviderImplementation {
 
     const total = file.size;
     let offset = 0;
+    let lastStatus = 0;
 
     try {
       while (offset < total) {
@@ -670,6 +695,7 @@ class OneDriveProvider extends VfsProviderImplementation {
             description: browser.i18n.getMessage('errorHttpDescription', [String(resp.status)]),
           });
         }
+        lastStatus = resp.status;
         offset = end;
         this.reportProgress(requestId, Math.floor((offset / total) * 100));
       }
@@ -678,15 +704,30 @@ class OneDriveProvider extends VfsProviderImplementation {
       fetch(uploadUrl, { method: 'DELETE' }).catch(() => { });
       throw e;
     }
+    return lastStatus;   // final-chunk status: 201 (new) or 200 (replace)
   }
 
   // ── Copy-monitor polling ──────────────────────────────────────────────────
 
   async #awaitCopy(monitorUrl, requestId, signal) {
     let lastPct = -1;
+    // Initial wait before the first poll: Graph's /copy typically takes
+    // 200–500 ms server-side even for tiny items, so an immediate poll is
+    // almost always a wasted `inProgress` round trip.
+    let delay = COPY_POLL_INITIAL_MS;
+    await sleepAbortable(delay, signal);
     while (true) {
       if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
       const resp = await fetch(monitorUrl, { signal });
+      // Monitor URL is on api.onedrive.com (not graph.microsoft.com) and
+      // uses plain fetch, so throttle handling lives here instead of in
+      // _authedFetchWithRetry. Honor Retry-After and re-poll without
+      // advancing the backoff clock — the server told us when to come back.
+      if (resp.status === 429 || resp.status === 503) {
+        const ra = Math.min(60, parseInt(resp.headers.get('Retry-After') ?? '1', 10) || 1);
+        await sleepAbortable(ra * 1000, signal);
+        continue;
+      }
       if (!resp.ok) {
         const text = await resp.text().catch(() => '');
         throw _err('E:PROVIDER', text || `HTTP ${resp.status}`, { id: `copy-monitor-${resp.status}` });
@@ -705,7 +746,8 @@ class OneDriveProvider extends VfsProviderImplementation {
         }
         throw _err('E:PROVIDER', body.error?.message ?? 'Copy failed', { id: 'copy-failed' });
       }
-      await sleepAbortable(COPY_POLL_INTERVAL, signal);
+      delay = Math.min(delay * 2, COPY_POLL_MAX_MS);
+      await sleepAbortable(delay, signal);
     }
   }
 
