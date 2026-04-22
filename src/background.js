@@ -38,6 +38,13 @@ function _chunks(arr, size) {
   return out;
 }
 
+function _err(code, message, details) {
+  const e = new Error(message);
+  e.code = code;
+  if (details) e.details = details;
+  return e;
+}
+
 // ────────────────────────────────────────────────────────────────────────────
 
 class OneDriveProvider extends VfsProviderImplementation {
@@ -76,23 +83,27 @@ class OneDriveProvider extends VfsProviderImplementation {
     this.#aborts.delete(requestId);
   }
 
+  async #withRequest(requestId, fn) {
+    const signal = this.#signal(requestId);
+    try { return await fn(signal); }
+    finally { this.#done(requestId); }
+  }
+
   // ── Account / connection lookup ───────────────────────────────────────────
 
   async #accountData(accountId) {
     const key = accountKey(accountId);
     const data = (await browser.storage.local.get(key))[key];
-    if (!data) throw Object.assign(
-      new Error(browser.i18n.getMessage('errorUnknownConnection')), { code: 'E:AUTH' }
-    );
+    if (!data) throw _err('E:AUTH', browser.i18n.getMessage('errorUnknownConnection'));
     return data;
   }
 
   async #connection(storageId) {
     const key = connectionKey(storageId);
     const conn = (await browser.storage.local.get(key))[key];
-    if (!conn?.accountId || !conn?.driveId) throw Object.assign(
-      new Error(browser.i18n.getMessage('errorUnknownConnection')), { code: 'E:AUTH' }
-    );
+    if (!conn?.accountId || !conn?.driveId) {
+      throw _err('E:AUTH', browser.i18n.getMessage('errorUnknownConnection'));
+    }
     return conn;
   }
 
@@ -158,7 +169,7 @@ class OneDriveProvider extends VfsProviderImplementation {
       return account.accessToken;
     }
     if (!account.refreshToken) {
-      throw Object.assign(new Error(browser.i18n.getMessage('errorAuth')), { code: 'E:AUTH' });
+      throw _err('E:AUTH', browser.i18n.getMessage('errorAuth'));
     }
 
     const clientId = resolveClientId(account);
@@ -188,8 +199,7 @@ class OneDriveProvider extends VfsProviderImplementation {
 
   async onList(requestId, storageId, path) {
     const conn = await this.#connection(storageId);
-    const signal = this.#signal(requestId);
-    try {
+    return this.#withRequest(requestId, async (signal) => {
       const results = [];
       let url = pathToGraphUrl(conn, path,
         path === '/' ? '/children' : ':/children'
@@ -210,18 +220,17 @@ class OneDriveProvider extends VfsProviderImplementation {
       });
 
       return results.map(({ path, name, kind, size, lastModified }) => ({ path, name, kind, size, lastModified }));
-    } finally { this.#done(requestId); }
+    });
   }
 
   async onReadFile(requestId, storageId, path) {
     const { conn } = await this.#bundle(storageId);
-    const signal = this.#signal(requestId);
-    try {
+    return this.#withRequest(requestId, async (signal) => {
       const resp = await graphFetch('GET', pathToGraphUrl(conn, path, ':/content'),
         this.#callOpts(conn.accountId, signal));
       const blob = await resp.blob();
       return new File([blob], basenameOf(path), { type: blob.type || 'application/octet-stream' });
-    } finally { this.#done(requestId); }
+    });
   }
 
   async onStorageUsage(storageId) {
@@ -245,14 +254,13 @@ class OneDriveProvider extends VfsProviderImplementation {
 
   async onWriteFile(requestId, storageId, path, file, overwrite) {
     const { conn } = await this.#bundle(storageId);
-    const signal = this.#signal(requestId);
-    try {
+    return this.#withRequest(requestId, async (signal) => {
       await this.#mkdirpParent(conn, path, signal);
 
       const size = file.size ?? (await file.arrayBuffer()).byteLength;
       const existedBefore = await this.#exists(conn, path, signal);
       if (!overwrite && existedBefore) {
-        throw Object.assign(new Error(browser.i18n.getMessage('errorFileExists')), { code: 'E:EXIST' });
+        throw _err('E:EXIST', browser.i18n.getMessage('errorFileExists'));
       }
 
       if (size <= SIMPLE_UPLOAD_MAX) {
@@ -266,17 +274,16 @@ class OneDriveProvider extends VfsProviderImplementation {
         action: existedBefore ? 'modified' : 'created',
         target: { path },
       }]);
-    } finally { this.#done(requestId); }
+    });
   }
 
   async onAddFolder(requestId, storageId, path) {
     const { conn } = await this.#bundle(storageId);
-    const signal = this.#signal(requestId);
-    try {
+    return this.#withRequest(requestId, async (signal) => {
       await this.#mkdirpParent(conn, path, signal);
       await this.#createFolder(conn, path, /* mergeIfExists */ false, signal);
       await this.#broadcastChanges(conn, [{ kind: 'directory', action: 'created', target: { path } }]);
-    } finally { this.#done(requestId); }
+    });
   }
 
   async onDeleteFile(requestId, storageId, path) {
@@ -289,8 +296,7 @@ class OneDriveProvider extends VfsProviderImplementation {
 
   async #delete(requestId, storageId, path, kind) {
     const { conn } = await this.#bundle(storageId);
-    const signal = this.#signal(requestId);
-    try {
+    return this.#withRequest(requestId, async (signal) => {
       const resp = await graphFetch('DELETE', pathToGraphUrl(conn, path, ':'),
         this.#callOpts(conn.accountId, signal, { raw: true }));
       if (resp.status !== 204 && resp.status !== 404 && !resp.ok) {
@@ -299,7 +305,7 @@ class OneDriveProvider extends VfsProviderImplementation {
           this.#callOpts(conn.accountId, signal));
       }
       await this.#broadcastChanges(conn, [{ kind, action: 'deleted', target: { path } }]);
-    } finally { this.#done(requestId); }
+    });
   }
 
   async onMoveFile(requestId, storageId, oldPath, newPath, overwrite) {
@@ -322,8 +328,7 @@ class OneDriveProvider extends VfsProviderImplementation {
 
   async #moveOrCopy(requestId, storageId, oldPath, newPath, overwrite, { op, kind }) {
     const { conn } = await this.#bundle(storageId);
-    const signal = this.#signal(requestId);
-    try {
+    return this.#withRequest(requestId, async (signal) => {
       await this.#mkdirpParent(conn, newPath, signal);
 
       // Personal OneDrive's /copy silently ignores `conflictBehavior` (either
@@ -339,10 +344,7 @@ class OneDriveProvider extends VfsProviderImplementation {
         const existingId = await this.#resolveItemId(conn, newPath, signal).catch(() => null);
         if (existingId) {
           if (op === 'copy' && !overwrite) {
-            throw Object.assign(
-              new Error(browser.i18n.getMessage('errorFileExists')),
-              { code: 'E:EXIST' }
-            );
+            throw _err('E:EXIST', browser.i18n.getMessage('errorFileExists'));
           }
           await graphFetch('DELETE',
             `${GRAPH_BASE}/drives/${encodeURIComponent(conn.driveId)}/items/${encodeURIComponent(existingId)}`,
@@ -407,7 +409,7 @@ class OneDriveProvider extends VfsProviderImplementation {
           source: { path: oldPath }, target: { path: newPath },
         }]);
       }
-    } finally { this.#done(requestId); }
+    });
   }
 
   async #awaitFolderCopyConsistency(conn, srcPath, destPath, signal) {
@@ -428,8 +430,7 @@ class OneDriveProvider extends VfsProviderImplementation {
 
   async #mergeOp(requestId, storageId, srcPath, destPath, op) {
     const { conn } = await this.#bundle(storageId);
-    const signal = this.#signal(requestId);
-    try {
+    return this.#withRequest(requestId, async (signal) => {
       await this.#mkdirpParent(conn, destPath, signal);
       await this.#createFolder(conn, destPath, /* mergeIfExists */ true, signal);
 
@@ -563,7 +564,7 @@ class OneDriveProvider extends VfsProviderImplementation {
       }
 
       await this.#broadcastChanges(conn, completed);
-    } finally { this.#done(requestId); }
+    });
   }
 
   #emitPartial(conn, completed) {
@@ -583,15 +584,13 @@ class OneDriveProvider extends VfsProviderImplementation {
     const errBody   = r.body?.error ?? {};
     const graphCode = errBody.code;
     if (graphCode === 'nameAlreadyExists' || r.status === 409) {
-      return Object.assign(new Error(browser.i18n.getMessage('errorFileExists')), { code: 'E:EXIST' });
+      return _err('E:EXIST', browser.i18n.getMessage('errorFileExists'));
     }
     if (r.status === 403) {
-      return Object.assign(new Error(errBody.message || 'Forbidden'), { code: 'E:AUTH' });
+      return _err('E:AUTH', errBody.message || 'Forbidden');
     }
     const msg = errBody.message || `HTTP ${r.status}`;
-    const e = new Error(msg);
-    e.code      = 'E:PROVIDER';
-    e.details   = { id: `batch-${r.status}` };
+    const e = _err('E:PROVIDER', msg, { id: `batch-${r.status}` });
     e.graphCode = graphCode;
     e.status    = r.status;
     return e;
@@ -624,7 +623,7 @@ class OneDriveProvider extends VfsProviderImplementation {
       }));
 
     const uploadUrl = session.uploadUrl;
-    if (!uploadUrl) throw Object.assign(new Error('No uploadUrl returned'), { code: 'E:PROVIDER' });
+    if (!uploadUrl) throw _err('E:PROVIDER', 'No uploadUrl returned');
 
     const total = file.size;
     let offset = 0;
@@ -645,16 +644,13 @@ class OneDriveProvider extends VfsProviderImplementation {
         });
         if (!resp.ok) {
           if (resp.status === 409) {
-            throw Object.assign(new Error(browser.i18n.getMessage('errorFileExists')), { code: 'E:EXIST' });
+            throw _err('E:EXIST', browser.i18n.getMessage('errorFileExists'));
           }
           const text = await resp.text().catch(() => '');
-          throw Object.assign(new Error(text || `HTTP ${resp.status}`), {
-            code: 'E:PROVIDER',
-            details: {
-              id:          `http-${resp.status}`,
-              title:       browser.i18n.getMessage('errorHttpTitle', [String(resp.status)]),
-              description: browser.i18n.getMessage('errorHttpDescription', [String(resp.status)]),
-            },
+          throw _err('E:PROVIDER', text || `HTTP ${resp.status}`, {
+            id:          `http-${resp.status}`,
+            title:       browser.i18n.getMessage('errorHttpTitle', [String(resp.status)]),
+            description: browser.i18n.getMessage('errorHttpDescription', [String(resp.status)]),
           });
         }
         offset = end;
@@ -676,7 +672,7 @@ class OneDriveProvider extends VfsProviderImplementation {
       const resp = await fetch(monitorUrl, { signal });
       if (!resp.ok) {
         const text = await resp.text().catch(() => '');
-        throw Object.assign(new Error(text || `HTTP ${resp.status}`), { code: 'E:PROVIDER', details: { id: `copy-monitor-${resp.status}` } });
+        throw _err('E:PROVIDER', text || `HTTP ${resp.status}`, { id: `copy-monitor-${resp.status}` });
       }
       const body = await resp.json();
       const pct = Math.floor(body.percentageComplete ?? 0);
@@ -688,12 +684,9 @@ class OneDriveProvider extends VfsProviderImplementation {
       if (body.status === 'failed') {
         const graphErrCode = body.error?.code;
         if (graphErrCode === 'nameAlreadyExists') {
-          throw Object.assign(new Error(browser.i18n.getMessage('errorFileExists')), { code: 'E:EXIST' });
+          throw _err('E:EXIST', browser.i18n.getMessage('errorFileExists'));
         }
-        throw Object.assign(new Error(body.error?.message ?? 'Copy failed'), {
-          code: 'E:PROVIDER',
-          details: { id: 'copy-failed' },
-        });
+        throw _err('E:PROVIDER', body.error?.message ?? 'Copy failed', { id: 'copy-failed' });
       }
       await sleepAbortable(COPY_POLL_INTERVAL, signal);
     }
