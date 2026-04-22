@@ -276,7 +276,9 @@ signInBtn.addEventListener('click', async () => {
 
     hidePopover();
   } catch (e) {
-    if (e.name !== 'AbortError') {
+    if (e.name === 'AbortError') {
+      setStatus('');
+    } else {
       setStatus(e.message || String(e), 'error');
     }
   } finally {

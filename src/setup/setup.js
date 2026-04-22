@@ -136,7 +136,9 @@ signInBtn.addEventListener('click', async () => {
     setStatus('', '');
     await loadDrives();
   } catch (e) {
-    if (e.name !== 'AbortError') {
+    if (e.name === 'AbortError') {
+      setStatus('');
+    } else {
       setStatus(e.message || String(e), 'error');
     }
   } finally {

@@ -154,10 +154,14 @@ function _waitForRedirect(windowId, expectedState, signal) {
 
     const onRemoved = (closedId) => {
       if (closedId !== windowId) return;
-      settle(reject, Object.assign(
-        new DOMException(browser.i18n.getMessage('setupErrorPopupClosed'), 'AbortError'),
-        { code: 'E:AUTH' }
-      ));
+      // Use a plain Error (not DOMException) — DOMException's `code` is a
+      // read-only legacy getter, so Object.assign({ code: ... }) throws
+      // TypeError synchronously, the promise never settles, and the caller's
+      // finally block never re-enables the UI.
+      const err = new Error(browser.i18n.getMessage('setupErrorPopupClosed'));
+      err.name = 'AbortError';
+      err.code = 'E:AUTH';
+      settle(reject, err);
     };
 
     const onAbort = () => {
