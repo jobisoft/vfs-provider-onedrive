@@ -370,14 +370,14 @@ class OneDriveProvider extends VfsProviderImplementation {
         }
       }
 
-      const srcItem = await this.#resolveItemMeta(conn, oldPath, signal);
+      const srcId = await this.#resolveItemId(conn, oldPath, signal);
       const destParentId = await this.#resolveParentId(conn, newPath, signal);
       const newName = basenameOf(newPath);
 
       if (op === 'move') {
         const body = { parentReference: { id: destParentId }, name: newName };
         await graphJSON('PATCH',
-          `${GRAPH_BASE}/drives/${encodeURIComponent(conn.driveId)}/items/${encodeURIComponent(srcItem.id)}`,
+          `${GRAPH_BASE}/drives/${encodeURIComponent(conn.driveId)}/items/${encodeURIComponent(srcId)}`,
           this.#callOpts(conn.accountId, signal, {
             headers: { 'Content-Type': 'application/json' },
             body:    JSON.stringify(body),
@@ -394,7 +394,7 @@ class OneDriveProvider extends VfsProviderImplementation {
           name: newName,
         };
         const resp = await graphFetch('POST',
-          `${GRAPH_BASE}/drives/${encodeURIComponent(conn.driveId)}/items/${encodeURIComponent(srcItem.id)}/copy`,
+          `${GRAPH_BASE}/drives/${encodeURIComponent(conn.driveId)}/items/${encodeURIComponent(srcId)}/copy`,
           this.#callOpts(conn.accountId, signal, {
             headers: { 'Content-Type': 'application/json' },
             body:    JSON.stringify(body),
@@ -703,7 +703,7 @@ class OneDriveProvider extends VfsProviderImplementation {
 
   async #exists(conn, path, signal) {
     try {
-      await this.#resolveItemMeta(conn, path, signal);
+      await this.#resolveItemId(conn, path, signal);
       return true;
     } catch (e) {
       if (e.code === 'E:PROVIDER' && /http-404/.test(e.details?.id ?? '')) return false;
@@ -712,20 +712,12 @@ class OneDriveProvider extends VfsProviderImplementation {
     }
   }
 
-  async #resolveItemMeta(conn, path, signal) {
-    if (!path || path === '/') {
-      // The connection root — always exists.
-      return { id: conn.rootItemId ?? 'root' };
-    }
-    const body = await graphJSON('GET',
-      pathToGraphUrl(conn, path, ':?$select=id,parentReference,name,folder,file'),
-      this.#callOpts(conn.accountId, signal));
-    return body;
-  }
-
   async #resolveItemId(conn, path, signal) {
-    const meta = await this.#resolveItemMeta(conn, path, signal);
-    return meta.id;
+    if (!path || path === '/') return conn.rootItemId ?? 'root';
+    const body = await graphJSON('GET',
+      pathToGraphUrl(conn, path, ':?$select=id'),
+      this.#callOpts(conn.accountId, signal));
+    return body.id;
   }
 
   async #resolveParentId(conn, childPath, signal) {
