@@ -36,7 +36,7 @@ export const REDIRECT_URI = 'https://login.microsoftonline.com/common/oauth2/nat
  * constant is ever rotated, every default-using account automatically picks
  * up the new value via `resolveClientId`.
  */
-const DEFAULT_CLIENT_ID = 'c6b54396-5255-4c78-86d6-a478451f0b13';
+const DEFAULT_CLIENT_ID = '71fda5e6-4e82-4064-9948-bb8b76f3b83e';
 
 // Files.ReadWrite.All lets us traverse shared-with-me drives.
 // offline_access tells Azure AD to issue a refresh_token.
