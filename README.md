@@ -2,17 +2,6 @@
 
 A [VFS Toolkit](https://github.com/thunderbird/webext-support/tree/master/modules/vfs-toolkit) storage provider for Microsoft OneDrive. Lets consumer add-ons browse, read, and write files stored in a user's OneDrive (personal or work/school) and drives shared with them, through the VFS Toolkit picker and client API.
 
-## Features
-
-- OAuth 2.0 **Authorization Code + PKCE** via a popup window (nice sign-in UX, no passwords stored).
-- Supports personal Microsoft accounts and work/school (AAD) accounts.
-- Connects to the user's own OneDrive, or to any drive/folder that has been shared with them (`/me/drive/sharedWithMe`).
-- Change detection via Microsoft Graph `/delta`; updates propagate to all connected add-ons.
-- Multiple connections per Microsoft account (one sign-in, many drives).
-- Full read/write: list, read, write, rename, move, copy, delete for files and folders.
-- Resumable uploads for files larger than 4 MiB (Graph upload sessions).
-- Deploys cleanly to many users: one Azure app registration backs unlimited installs, and the add-on ships with a bundled default so most users don't even see an Azure step.
-
 ## Quick start
 
 1. Install the add-on in Thunderbird.
@@ -36,34 +25,13 @@ Only needed if your organization's policy requires each add-on to use an org-reg
 8. **Overview** → copy the **Application (client) ID**.
 9. In the add-on, **Options** → **Add Account** → expand **"Use a custom Azure app (advanced)"** → paste the client ID → **Sign in**.
 
-## Enterprise deployment
-
-One Azure app registration / one client ID is sufficient for any number of users. The popup + PKCE flow uses the well-known `nativeclient` redirect URI, which is fixed across all installs — no per-user or per-install registration needed.
-
-## Storage layout
-
-```
-onedrive-account-{accountId}  →  { clientId, displayName, userPrincipalName,
-                                   accessToken, refreshToken, expiresAt, ... }
-onedrive-conn-{storageId}     →  { accountId, driveId, rootItemId, driveName,
-                                   driveType, deltaLink, pollInterval }
-```
-
-Multiple `onedrive-conn-*` rows can point at the same `onedrive-account-*`, so users can mount several drives (own + shared folders) without re-authenticating.
-
-## Change detection
-
-The provider uses Microsoft Graph's `/delta` endpoint. A `browser.alarms` alarm is registered per connection; each tick fetches the stored `@odata.deltaLink`, maps the returned items to VFS `StorageChangeEntry` objects, and broadcasts them to all connected clients. The `deltaLink` is persisted in `storage.local` so the sync state survives Thunderbird restarts and MV3 event-page unloads. 410 Gone responses trigger a silent re-prime.
-
-Alarms have a 1-minute minimum period. User-configured poll intervals below 60 s are rounded up to 60 s.
-
 ## Build
 
 ```sh
 npm run build
 ```
 
-Produces `dist/vfs-toolkit-onedrive-provider_<version>.xpi` and refreshes the vendored toolkit files in `src/vendor/`.
+Produces `dist/vfs-toolkit-onedrive-provider_<version>.xpi` and refreshes the vendored toolkit files in `src/vendor/`. The version is picked up from `package.json`.
 
 ## License
 
