@@ -44,6 +44,16 @@ cancelBtn.addEventListener('click', () => {
   window.close();
 });
 
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter') return;
+  let primary = null;
+  if (!connectBtn.disabled) primary = connectBtn;
+  else if (!newAccountForm.hidden && !signInBtn.disabled) primary = signInBtn;
+  if (!primary || document.activeElement === primary) return;
+  e.preventDefault();
+  primary.click();
+});
+
 addonNameEl.textContent = addonName || i18n('setupSubtitleDefaultAddon');
 
 // ── State ─────────────────────────────────────────────────────────────────────

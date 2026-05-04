@@ -219,10 +219,20 @@ const hidePopover = () => {
 cancelBtn.addEventListener('click', hidePopover);
 
 popover.addEventListener('toggle', e => {
-  if (e.newState === 'open') document.addEventListener('keydown', onEsc);
-  else                       document.removeEventListener('keydown', onEsc);
+  if (e.newState === 'open') document.addEventListener('keydown', onPopoverKey);
+  else                       document.removeEventListener('keydown', onPopoverKey);
 });
-function onEsc(e) { if (e.key === 'Escape') hidePopover(); }
+function onPopoverKey(e) {
+  if (e.key === 'Escape') {
+    hidePopover();
+    return;
+  }
+  if (e.key === 'Enter') {
+    if (signInBtn.disabled || document.activeElement === signInBtn) return;
+    e.preventDefault();
+    signInBtn.click();
+  }
+}
 
 signInBtn.addEventListener('click', async () => {
   const customClientId = clientIdInput.value.trim();  // '' = use bundled default
